@@ -45,14 +45,45 @@ public class CardUtils {
 		return type;
 	}
 	public void getRandomcards_(){
+		CardType type = getRandomCardType();
+		ArrayList<Integer> cards = null;
+		switch (type) {
+		case E_DL:
+			
+			break;
+		case E_BZ:
+			cards = getBZCards();
+			break;
+		case E_SJ:
+			
+			break;
+		case E_JH:
+			
+			break;
+		case E_SZ:
+			
+			break;
+		case E_DZ:
+			
+			break;
+		case E_GP:
+			
+			break;
+		default:
+			break;
+		}
 		
 	}
-	public ArrayList<Integer> getBZCards(){
+	public ArrayList<Integer> getDLCards(){
 		ArrayList<Integer> cards = new ArrayList<>();
+		return cards;
+	}
+	public ArrayList<Integer> getBZCards(){
 		if (cards_.size() < 3) {
 			System.out.println("error error error error error error error error error getBZCards not engouth cards");
-			return cards;
+			return cards_;
 		}
+		ArrayList<Integer> cards = new ArrayList<>();
 		int i = 0;
 		for (; i < (cards_.size()-1); i++) {
 			int sameCard = 0;
@@ -84,6 +115,89 @@ public class CardUtils {
 		
 		return cards;
 	}
+	public ArrayList<Integer> getSJCards(){
+		if (cards_.size() < 3) {
+			System.out.println("error error error error error error error error error getSJCards not engouth cards");
+			return cards_;
+		}
+		ArrayList<Integer> cards = new ArrayList<>();
+		int i = 0;
+		for (; i < (cards_.size()-2); i++) {
+			ArrayList<Integer> usefulCards = new ArrayList<>();
+			int iCardValue = cards_.get(i);
+			int iCardType = (int)((byte)iCardValue & 0xF0) >> 4;
+			for (int j = i+1; j < cards_.size(); j++) {
+				int jCardValue = cards_.get(j);
+				int jCardType = (int)((byte)jCardValue & 0xF0) >> 4;
+				if (iCardType == jCardType && (Math.abs(iCardValue-jCardValue) <=2 || Math.abs(iCardValue-jCardValue)>=11)) {
+					usefulCards.add(cards_.get(j));
+				}
+			}
+			if (usefulCards.size() < 2) {
+				continue;
+			}else {
+				for (int j = 0; j < usefulCards.size()-1; j++) {
+					for (int j2 = j+1; j2 < usefulCards.size(); j2++) {
+						cards.add(iCardValue);
+						cards.add(usefulCards.get(j));
+						cards.add(usefulCards.get(j2));
+						if(isSZCard(cards)){
+							removeArryListValue(cards_,iCardValue);
+							removeArryListValue(cards_,usefulCards.get(j));
+							removeArryListValue(cards_,usefulCards.get(j2));
+							return cards;
+						}else{
+							cards.clear();
+						}
+					}
+				}
+			}
+		}
+		return cards;
+	}
+	public boolean isSZCard(ArrayList<Integer> pCard){
+		if (pCard.size() != 3) {
+			System.out.println("error error error error error error error error error isSZCard cards num is error");
+			return false;
+		}
+		ArrayList<Integer> cards = new ArrayList<>(pCard);
+		for (int i = 0; i < cards.size(); i++) {
+			cards.set(i, (int)(cards.get(i) & 0x0F));
+		}
+		for (int i = 0; i < cards.size()-1; i++) {
+			for (int j = i+1; j < cards.size(); j++) {
+				if (cards.get(i) > cards.get(j)) {
+					int temp = cards.get(i);
+					cards.set(i, cards.get(j));
+					cards.set(j, temp);
+				}
+			}
+		}
+		int i = cards.get(0);
+		int j = cards.get(1);
+		int k = cards.get(2);
+		if ((i+1 == j && j+1 ==k) || (i==1 && j== 12&& k == 13)) {
+			return true;
+		}
+		return false;
+	}
+	public ArrayList<Integer> getJHCards(){
+		ArrayList<Integer> cards = new ArrayList<>();
+		return cards;
+	}
+
+	public ArrayList<Integer> getSZCards(){
+		ArrayList<Integer> cards = new ArrayList<>();
+		return cards;
+	}
+	public ArrayList<Integer> getDZCards(){
+		ArrayList<Integer> cards = new ArrayList<>();
+		return cards;
+	}
+	public ArrayList<Integer> getGPCards(){
+		ArrayList<Integer> cards = new ArrayList<>();
+		return cards;
+	}
 	public void reSetcards_(){
 		cards_.clear();
 		for (int i = 1; i < 62; i++) {
@@ -105,6 +219,13 @@ public class CardUtils {
 		for (int i = 0; i < 52; i++) {
 			System.out.print(cards_.get(i)+" ");;
 		}
-		
+	}
+	private void removeArryListValue(ArrayList<Integer> cards,int value){
+		for (int i = 0; i < cards.size(); i++) {
+			if (value == cards.get(i)) {
+				cards.remove(i);
+				break;
+			}
+		}
 	}
 }

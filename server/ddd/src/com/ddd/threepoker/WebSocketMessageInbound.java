@@ -34,12 +34,12 @@ public class WebSocketMessageInbound extends MessageInbound {
 		cardUtils.reSetcards_();
 		ArrayList<Integer> cardsArrayList = null;
 		System.out.println();
-		System.out.println("bz cards :" );
-		for (int j = 0; j < 13; j++) {
+		System.out.println("sj cards :" );
+		for (int j = 0; j < 20; j++) {
 			if (null != cardsArrayList) {
 				cardsArrayList.clear();
 			}
-			cardsArrayList = cardUtils.getBZCards();
+			cardsArrayList = cardUtils.getSJCards();
 			for (int i = 0; i < cardsArrayList.size(); i++) {
 				System.out.print(cardsArrayList.get(i)+"  ");
 			}

@@ -1,4 +1,4 @@
-# Windows image file caches
+i# Windows image file caches
 Thumbs.db
 ehthumbs.db
 
@@ -42,6 +42,15 @@ $RECYCLE.BIN/
 # Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop
-Network Trash Folder
+
+# lxf vs file
+*.sdf
+/client/CocosJSGame/frameworks/cocos2d-html5/
+/client/CocosJSGame/frameworks/js-bindings/
+/client/CocosJSGame/frameworks/runtime-src/proj.win32/Debug.win32/
+/client/CocosJSGame/publish/
+/client/CocosJSGame/runtime/
+
+Trash Folder
 Temporary Items
 .apdisk
