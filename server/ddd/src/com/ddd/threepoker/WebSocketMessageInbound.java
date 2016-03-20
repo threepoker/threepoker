@@ -34,27 +34,48 @@ public class WebSocketMessageInbound extends MessageInbound {
 		cardUtils.reSetcards_();
 		ArrayList<Integer> cardsArrayList = null;
 		System.out.println();
-		System.out.println("sj cards :" );
-		for (int j = 0; j < 20; j++) {
+		for (int j = 0; j < 1; j++) {
 			if (null != cardsArrayList) {
 				cardsArrayList.clear();
 			}
-			cardsArrayList = cardUtils.getSJCards();
+			cardsArrayList = cardUtils.getRandomCards();
+			cardUtils.sortCardsSmallBig(cardsArrayList);
 			for (int i = 0; i < cardsArrayList.size(); i++) {
 				System.out.print(cardsArrayList.get(i)+"  ");
 			}
-			System.out.println();			
+			System.out.println();
 		}
+		
+		
+//		for (int k = 0; k < 999; k++) {
+//			cardUtils.reSetcards_();
+//			int num = 0;
+//			for (int j = 0; j < 20; j++) {
+//				if (null != cardsArrayList) {
+//					cardsArrayList.clear();
+//				}
+//				cardsArrayList = cardUtils.getSZCards();
+//				if (cardsArrayList.size() == 3) {
+//					num++;
+//				}
+//			}
+//			System.out.println("num = "+num);
+//		}
+		
 		
 		System.out.println("user : onOpen" );
 		// 触发连接事件，在连接池中添加连接
 		JSONObject result = new JSONObject();
 		result.put("type", "user_join");
 		result.put("user", this.user);
+		for (int i = 0; i < cardsArrayList.size(); i++) {
+			result.put("card"+i,cardsArrayList.get(i).toString());
+		}
+		
 		//向所有在线用户推送当前用户上线的消息
 		WebSocketMessageInboundPool.sendMessage(result.toString());
 		
-		result = new JSONObject();
+		
 		result.element("type", "get_online_user");
 		result.element("list", WebSocketMessageInboundPool.getOnlineUser());
 		//向连接池添加当前的连接对象

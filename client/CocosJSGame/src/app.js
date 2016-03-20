@@ -31,10 +31,11 @@ var HelloWorldScene = cc.Scene.extend({
         ws.onopen = function(){ 
         	cc.log("onopen"); 
         };
-        
+         
         ws.onmessage = function(message){
         	cc.log("onmessage= "+message.data);
+        	EventCenter.postNotification("onOpen",message.data);
         };
     }
-});
-
+});      
+  

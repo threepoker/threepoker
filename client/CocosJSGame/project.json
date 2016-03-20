@@ -12,6 +12,7 @@
     "jsList":[
         "src/PokerCard.js",
         "src/resource.js",
-        "src/app.js"
+        "src/app.js",
+        "src/utils/EventCenter.js"
     ]
 }

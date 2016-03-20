@@ -7,7 +7,7 @@ var textArr = [
                
 ];
 
-var g_resources = [];
+var g_resources = g_resources || [];
 for (var i in res) {
     g_resources.push(res[i]);
 }

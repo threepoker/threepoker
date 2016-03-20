@@ -21,11 +21,19 @@ var PokerCard = cc.Layer.extend({
 		return true;
 	},
 	onEnter:function (){
+		EventCenter.addObserver(this,this.onGetCards, "onOpen", null);
 		this._super();
 
 	},
+	onGetCards:function(data){
+		cc.log("data = "+data);
+		var dataJson = eval('('+data+')');
+		cc.log("card0 = "+dataJson["card0"]);
+		
+	},
 
 	onExit:function (){
+		EventCenter.removeObserver(this);
 		this._super();
 	},
 	setCardValue:function(value){
