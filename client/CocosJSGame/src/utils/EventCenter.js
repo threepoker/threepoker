@@ -19,9 +19,9 @@ var EventCenter = {
 			if(this.events[i] != undefined && this.events[i].name == name){
 				var mSelector = this.events[i].selector;
 				if(this.events[i].sender != null){
-					mSelector(this.events[i].sender,data);					
+					mSelector.bind(this.events[i].target)(this.events[i].sender,data);					
 				}else{
-					mSelector(data);
+					mSelector.bind(this.events[i].target)(data);
 				}
 			}
 		}

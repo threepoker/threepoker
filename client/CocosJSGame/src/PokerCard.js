@@ -17,30 +17,48 @@ var PokerCard = cc.Layer.extend({
 		cc.log("add pokercard");
 		this.setContentSize(this.cardFont_.getContentSize());
 		
-		this.setScale(0.5);
+		this.cardPointBg_ = new cc.Sprite();
+		this.cardPointBg_.x = 18;
+		this.cardPointBg_.y = 100; 
+		this.cardPointBg_.setScale(0.7);
+		this.cardFont_.addChild(this.cardPointBg_); 
+		
+		this.cardTypeBg_ = new cc.Sprite();
+		this.cardTypeBg_.x = 18;
+		this.cardTypeBg_.y = 80;
+		this.cardTypeBg_.setScale(0.7);
+		this.cardFont_.addChild(this.cardTypeBg_); 
+		
+		//this.setScale(1);
 		return true;
 	},
 	onEnter:function (){
-		EventCenter.addObserver(this,this.onGetCards, "onOpen", null);
 		this._super();
-
-	},
-	onGetCards:function(data){
-		cc.log("data = "+data);
-		var dataJson = eval('('+data+')');
-		cc.log("card0 = "+dataJson["card0"]);
-		
 	},
 
 	onExit:function (){
-		EventCenter.removeObserver(this);
 		this._super();
 	},
 	setCardValue:function(value){
 		this.cardValue_ = value;
+		var cardType = (value&0xF0)>>4;
+		var cardPoint = value&0x0F;
+		cc.log("cardType = "+cardType+" cardPont = "+cardPoint);
+		switch(cardType){ 
+		case 0:
+		case 2:
+			this.cardPointBg_.initWithSpriteFrameName("cardrnum_"+cardPoint+".png");
+			break;
+		case 1:
+		case 3:
+			this.cardPointBg_.initWithSpriteFrameName("cardbnum_"+cardPoint+".png");
+		}
+		this.cardTypeBg_.initWithSpriteFrameName("cardtype_"+cardType+".png");
+		
 	},
 	seeCard:function(isAnimation,delayTime,revert){
-
+		this.cardBack_.setVisible(false);
+		this.cardFont_.setVisible(true);
 	},
 	slotSeeCard:function(){
 		
