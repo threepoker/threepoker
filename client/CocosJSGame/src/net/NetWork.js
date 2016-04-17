@@ -5,14 +5,16 @@ var NetWork = {
 		ws:null,
 		create:function(){
 			if(null != this.ws) return;
-			this.ws = new WebSocket("ws://127.0.0.1:8080/ws");//("ws://120.25.196.22:8080/ddd/ws");  
+			this.ws = new WebSocket("ws://127.0.0.1:8080/ws");//("ws://120.25.196.22:8080/ddd/ws");    
 			this.ws.onopen = function(e){ 
 				cc.log("onopen = "+e);
 				EventCenter.postNotification(NOTIFY_ONOPEN);
+				
+				NetWork.sendMSG("hello world"); 
 			}; 
 
-			this.ws.onmessage = function(message){
-				cc.log("onmessage= "+message.data);
+			this.ws.onmessage = function(message){ 
+				cc.log("onmessage= "+message);
 				cc.log("tag = "+eval('('+data+')')["tag"]);
 				EventCenter.postNotification(eval('('+data+')')["tag"],message.data);
 			};	
