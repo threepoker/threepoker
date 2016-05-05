@@ -26,14 +26,14 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.CharsetUtil;
 public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
-	private static final Logger logger = Logger
-			.getLogger(WebSocketServerHandshaker.class.getName());
+	private static final Logger logger = Logger.getLogger(WebSocketServerHandshaker.class.getName());
 	private WebSocketServerHandshaker handshaker;
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		// 添加
 		Global.group.add(ctx.channel());
 		System.out.println("客户端与服务端连接开启");
+		
 	}
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
@@ -41,13 +41,8 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 		Global.group.remove(ctx.channel());
 		System.out.println("客户端与服务端连接关闭");
 	}
-	protected void messageReceived(ChannelHandlerContext ctx, Object msg) throws Exception {
-		if (msg instanceof FullHttpRequest) {
-			handleHttpRequest(ctx, ((FullHttpRequest) msg));
-		} else if (msg instanceof WebSocketFrame) {
-			handlerWebSocketFrame(ctx, (WebSocketFrame) msg);
-		}
-	}
+	
+	
 	@Override
 	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 		ctx.flush();
@@ -131,7 +126,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 	protected void channelRead0(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
 		// TODO Auto-generated method stub
-		
+		if (msg instanceof FullHttpRequest) {
+			handleHttpRequest(ctx, ((FullHttpRequest) msg));
+		} else if (msg instanceof WebSocketFrame) {
+			handlerWebSocketFrame(ctx, (WebSocketFrame) msg);
+		}
 	}
 	
 	
