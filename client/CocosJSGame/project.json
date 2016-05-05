@@ -14,7 +14,7 @@
         "src/resource.js",
         "src/app.js",
         "src/utils/EventCenter.js",
-        "src/net/NetWork.js",
-        "src/common/Notification.js"
+        "src/common/Notification.js",
+        "src/net/NetWork.js"
     ]
 }

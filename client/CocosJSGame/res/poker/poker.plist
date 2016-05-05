@@ -498,7 +498,7 @@
                 <key>sourceSize</key>
                 <string>{24,32}</string>
             </dict>
-            <key>cardtype_01.png</key>
+            <key>cardtype_0.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{235,28},{19,24}}</string>
@@ -511,7 +511,7 @@
                 <key>sourceSize</key>
                 <string>{23,28}</string>
             </dict>
-            <key>cardtype_02.png</key>
+            <key>cardtype_1.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{90,114},{23,24}}</string>
@@ -524,7 +524,7 @@
                 <key>sourceSize</key>
                 <string>{23,28}</string>
             </dict>
-            <key>cardtype_03.png</key>
+            <key>cardtype_2.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{235,2},{19,24}}</string>
@@ -537,7 +537,7 @@
                 <key>sourceSize</key>
                 <string>{23,28}</string>
             </dict>
-            <key>cardtype_04.png</key>
+            <key>cardtype_3.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{90,91},{21,26}}</string>
@@ -560,7 +560,7 @@
             <key>size</key>
             <string>{256,512}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:e9bf632664b095f42961a12f62696652$</string>
+            <string>$TexturePacker:SmartUpdate:6a319c53dfb3b14d262ea20fb833b9d2$</string>
             <key>textureFileName</key>
             <string>publish2.png</string>
         </dict>

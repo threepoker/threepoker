@@ -3,9 +3,10 @@ var MSGTAG = {
 }
 var NetWork = {
 		ws:null,
-		create:function(){
+		create:function(){ 
 			if(null != this.ws) return;
-			this.ws = new WebSocket("ws://127.0.0.1:8080/ws");//("ws://120.25.196.22:8080/ddd/ws");    
+			this.ws = new WebSocket("ws://localhost:8080");//("ws://120.25.196.22:8080/ddd/ws");
+
 			this.ws.onopen = function(e){ 
 				cc.log("onopen = "+e);
 				EventCenter.postNotification(NOTIFY_ONOPEN);
@@ -18,7 +19,7 @@ var NetWork = {
 				cc.log("tag = "+eval('('+data+')')["tag"]);
 				EventCenter.postNotification(eval('('+data+')')["tag"],message.data);
 			};	
-			this.ws.onclose = function(e){
+			this.ws.onclose = function(e){ 
 				cc.log("onclose = "+e);
 				EventCenter.postNotification(NOTIFY_ONCLOSE);
 				this.ws = null;

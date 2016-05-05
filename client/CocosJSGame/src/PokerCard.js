@@ -50,7 +50,7 @@ var PokerCard = cc.Layer.extend({
 			this.cardPointBg_.initWithSpriteFrameName("cardrnum_"+cardPoint+".png");
 			break;
 		case 1:
-		case 3:
+		case 3: 
 			this.cardPointBg_.initWithSpriteFrameName("cardbnum_"+cardPoint+".png");
 		}
 		this.cardTypeBg_.initWithSpriteFrameName("cardtype_"+cardType+".png");
