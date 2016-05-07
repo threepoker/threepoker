@@ -30,9 +30,6 @@ var HelloWorldLayer = cc.Layer.extend({
         
         var touchBtn = new cc.ControlButton();
         
-
-        NetWork.create();
-        
         return true;
     },
 
@@ -50,7 +47,8 @@ var HelloWorldLayer = cc.Layer.extend({
     	this.card3.seeCard();
     },
     onEnter:function (){
-    	EventCenter.addObserver(this,this.onGetCards, MSGTAG.GETCARDS, null);
+    	EventCenter.addObserver(this,this.onGetCards, MSGTAG.GETCARD, null);
+    	NetWork.sendMSG("");
     	this._super();
     },
 

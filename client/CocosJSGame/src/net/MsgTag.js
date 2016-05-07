@@ -1,0 +1,4 @@
+var MSGTAG = {
+		LOGIN:100,
+		GETCARD:999,
+}

@@ -1,11 +1,19 @@
 package com.server.netty.websocket;
 
+import com.server.db.TableUserHandle;
 import com.server.netty.common.Global;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import sun.org.mozilla.javascript.internal.json.JsonParser;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -30,16 +38,16 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 	private WebSocketServerHandshaker handshaker;
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		// Ìí¼Ó
+		// æ·»åŠ 
 		Global.group.add(ctx.channel());
-		System.out.println("¿Í»§¶ËÓë·şÎñ¶ËÁ¬½Ó¿ªÆô");
+		System.out.println("å®¢æˆ·ç«¯ä¸æœåŠ¡ç«¯è¿æ¥å¼€å¯");
 		
 	}
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		// ÒÆ³ı
+		// ç§»é™¤
 		Global.group.remove(ctx.channel());
-		System.out.println("¿Í»§¶ËÓë·şÎñ¶ËÁ¬½Ó¹Ø±Õ");
+		System.out.println("å®¢æˆ·ç«¯ä¸æœåŠ¡ç«¯è¿æ¥å…³é—­");
 	}
 	
 	
@@ -49,36 +57,57 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 	}
 	private void handlerWebSocketFrame(ChannelHandlerContext ctx,
 			WebSocketFrame frame) {
-		// ÅĞ¶ÏÊÇ·ñ¹Ø±ÕÁ´Â·µÄÖ¸Áî
+		// åˆ¤æ–­æ˜¯å¦å…³é—­é“¾è·¯çš„æŒ‡ä»¤
 		if (frame instanceof CloseWebSocketFrame) {
 			handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame
 					.retain());
 		}
-		// ÅĞ¶ÏÊÇ·ñpingÏûÏ¢
+		// åˆ¤æ–­æ˜¯å¦pingæ¶ˆæ¯
 		if (frame instanceof PingWebSocketFrame) {
 			ctx.channel().write(
 					new PongWebSocketFrame(frame.content().retain()));
 			return;
 		}
-		// ±¾Àı³Ì½öÖ§³ÖÎÄ±¾ÏûÏ¢£¬²»Ö§³Ö¶ş½øÖÆÏûÏ¢
+		// æœ¬ä¾‹ç¨‹ä»…æ”¯æŒæ–‡æœ¬æ¶ˆæ¯ï¼Œä¸æ”¯æŒäºŒè¿›åˆ¶æ¶ˆæ¯
 		if (!(frame instanceof TextWebSocketFrame)) {
-			System.out.println("±¾Àı³Ì½öÖ§³ÖÎÄ±¾ÏûÏ¢£¬²»Ö§³Ö¶ş½øÖÆÏûÏ¢");
+			System.out.println("æœ¬ä¾‹ç¨‹ä»…æ”¯æŒæ–‡æœ¬æ¶ˆæ¯ï¼Œä¸æ”¯æŒäºŒè¿›åˆ¶æ¶ˆæ¯");
 			throw new UnsupportedOperationException(String.format(
 					"%s frame types not supported", frame.getClass().getName()));
 		}
-		// ·µ»ØÓ¦´ğÏûÏ¢
+		// è¿”å›åº”ç­”æ¶ˆæ¯
 		String request = ((TextWebSocketFrame) frame).text();
-		System.out.println("·şÎñ¶ËÊÕµ½£º" + request);
-		if (logger.isLoggable(Level.FINE)) {
-			logger
-					.fine(String.format("%s received %s", ctx.channel(),
-							request));
+		System.out.println("æœåŠ¡ç«¯æ”¶åˆ°ï¼š" + request);
+
+		JSONObject jsonObject = new JSONObject();
+		ArrayList<Integer> arrayList = new ArrayList<>();
+		arrayList.add(1);
+		arrayList.add(2);
+		arrayList.add(3);
+		try {
+			jsonObject.put("tag", 100);
+			jsonObject.put("status", 1);
+			jsonObject.put("result", "ç™»å½•æˆåŠŸ");
+			jsonObject.put("array",arrayList);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		TextWebSocketFrame tws = new TextWebSocketFrame(new Date().toString()+ ctx.channel().toString() + "£º" + request);
-		// Èº·¢
+		TextWebSocketFrame tws = new TextWebSocketFrame(jsonObject.toString());
+		// ç¾¤å‘
 		Global.group.writeAndFlush(tws);
-		// ·µ»Ø¡¾Ë­·¢µÄ·¢¸øË­¡¿
+		// è¿”å›ã€è°å‘çš„å‘ç»™è°ã€‘
 		// ctx.channel().writeAndFlush(tws);
+		
+		try {
+			JSONObject rj = new JSONObject(request);
+
+			TableUserHandle tableUserHandle = new TableUserHandle();
+			tableUserHandle.insertUser(rj.getString("userName"), rj.getString("password"), rj.getString("deviceId")
+					, rj.getString("nickName"), rj.getInt("channelId"), rj.getString("model"), rj.getString("version"), false);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	private void handleHttpRequest(ChannelHandlerContext ctx,
 			FullHttpRequest req) {
@@ -100,14 +129,14 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 	}
 	private static void sendHttpResponse(ChannelHandlerContext ctx,
 			FullHttpRequest req, DefaultFullHttpResponse res) {
-		// ·µ»ØÓ¦´ğ¸ø¿Í»§¶Ë
+		// è¿”å›åº”ç­”ç»™å®¢æˆ·ç«¯
 		if (res.getStatus().code() != 200) {
 			ByteBuf buf = Unpooled.copiedBuffer(res.getStatus().toString(),
 					CharsetUtil.UTF_8);
 			res.content().writeBytes(buf);
 			buf.release();
 		}
-		// Èç¹ûÊÇ·ÇKeep-Alive£¬¹Ø±ÕÁ¬½Ó
+		// å¦‚æœæ˜¯éKeep-Aliveï¼Œå…³é—­è¿æ¥
 		ChannelFuture f = ctx.channel().writeAndFlush(res);
 		if (!isKeepAlive(req) || res.getStatus().code() != 200) {
 			f.addListener(ChannelFutureListener.CLOSE);
@@ -144,7 +173,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 //                    " cipher suite.\n");
 //        }
 //        /**
-//         * ÔÚ·şÎñÆ÷¶Ë´òÓ¡ÇëÇóĞÅÏ¢
+//         * åœ¨æœåŠ¡å™¨ç«¯æ‰“å°è¯·æ±‚ä¿¡æ¯
 //         */
 //        System.out.println("VERSION: " + fullHttpRequest.getProtocolVersion().text() + "\r\n");
 //        System.out.println("REQUEST_URI: " + fullHttpRequest.getUri() + "\r\n\r\n");
@@ -154,7 +183,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 //        }
 //  
 //        /**
-//         * ·şÎñÆ÷¶Ë·µ»ØĞÅÏ¢
+//         * æœåŠ¡å™¨ç«¯è¿”å›ä¿¡æ¯
 //         */
 //        responseContent.setLength(0);
 //        responseContent.append("WELCOME TO THE WILD WILD WEB SERVER\r\n");
@@ -180,7 +209,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 //        responseContent.append("\r\n\r\n");
 //  
 //        if (fullHttpRequest.getMethod().equals(HttpMethod.GET)) {
-//            //getÇëÇó
+//            //getè¯·æ±‚
 //            QueryStringDecoder decoderQuery = new QueryStringDecoder(fullHttpRequest.getUri());
 //            Map<String, List<String>> uriAttributes = decoderQuery.parameters();
 //            for (Entry<String, List<String>> attr : uriAttributes.entrySet()) {
@@ -194,7 +223,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 //            writeResponse(ctx.channel());
 //            return;
 //        } else if (fullHttpRequest.getMethod().equals(HttpMethod.POST)) {
-//            //postÇëÇó
+//            //postè¯·æ±‚
 //            decoder = new HttpPostRequestDecoder(factory, fullHttpRequest);
 //            readingChunks = HttpHeaders.isTransferEncodingChunked(fullHttpRequest);
 //            responseContent.append("Is Chunked: " + readingChunks + "\r\n");

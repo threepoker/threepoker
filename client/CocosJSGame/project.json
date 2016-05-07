@@ -15,6 +15,10 @@
         "src/app.js",
         "src/utils/EventCenter.js",
         "src/common/Notification.js",
-        "src/net/NetWork.js"
+        "src/mediator/ApplicationMediator.js",
+        "src/net/NetWork.js",
+        "src/net/GameProxy.js",
+        "src/net/MsgTag.js",
+        "src/utils/Utils.js"
     ]
 }

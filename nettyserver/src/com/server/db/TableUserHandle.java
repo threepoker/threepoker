@@ -1,29 +1,14 @@
 package com.server.db;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Timestamp;
 
-import com.server.db.ConnectionPool.PooledConnection;
+import com.server.db.TableCommonHandle;
 
 public class TableUserHandle {
-	public void insertUser(){
-		String sql = "select * from user";
-		ResultSet rs;
-		PooledConnection conn = null;
-		try {
-			conn = DBManager.getConnection();
-			rs = conn.executeQuery(sql);
-			
-			if (rs.next()){
-				 System.out.println(rs.getInt(1)+"/t"+rs.getString(2)+"/t"+rs.getString(3)); 
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if (null != conn) {
-				conn.close();				
-			}
-		}
+	public void insertUser(String username,String password,String deviceId,String nickName,int channelId,String model,String version,boolean isRobot){
+		TableCommonHandle tableCommonHandle = new TableCommonHandle();
+		Timestamp createTimestamp = new Timestamp(System.currentTimeMillis());
+		String sql = String.format("insert user(userName,password,deviceId,nickName,channelId,model,version,isRobot,createTime,lastLoginTime) values('%s','%s','%s','%s',%d,'%s','%s',%b,'%s','%s')",username,password,deviceId,nickName,channelId,model,version,isRobot,createTimestamp.toString(),createTimestamp.toString());
+		int userId = tableCommonHandle.executeUpdate(sql);
 	}
 }

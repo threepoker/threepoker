@@ -18,10 +18,10 @@ var EventCenter = {
 		for (var i = 0; i < this.events.length; i++) {
 			if(this.events[i] != undefined && this.events[i].name == name){
 				var mSelector = this.events[i].selector;
-				if(this.events[i].sender != null){
-					mSelector.bind(this.events[i].target)(this.events[i].sender,data);					
+				if(data != null){
+					mSelector.bind(this.events[i].target)(data);			
 				}else{
-					mSelector.bind(this.events[i].target)(data);
+					mSelector.bind(this.events[i].target)(this.events[i].sender,data);		
 				}
 			}
 		}
