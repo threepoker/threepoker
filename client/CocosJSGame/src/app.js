@@ -47,13 +47,13 @@ var HelloWorldLayer = cc.Layer.extend({
     	this.card3.seeCard();
     },
     onEnter:function (){
-    	EventCenter.addObserver(this,this.onGetCards, MSGTAG.GETCARD, null);
+    	NotificationCenter.addObserver(this,this.onGetCards, MSGTAG.GETCARD, null);
     	NetWork.sendMSG("");
     	this._super();
     },
 
     onExit:function (){
-    	EventCenter.removeObserver(this);
+    	NotificationCenter.removeObserver(this);
     	this._super();
     },
 	   

@@ -1,6 +1,6 @@
 var GameProxy = {
 		RegisterEvent:function(){
-			EventCenter.addObserver(GameProxy, GameProxy.loginRes, MSGTAG.LOGIN, null);
+			NotificationCenter.addObserver(GameProxy, GameProxy.loginRes, MSGTAG.LOGIN, null);
 		},
 		loginReq:function(userName,password,deviceId,nickName,channelId,model,version){
 			var json = {};

@@ -1,4 +1,4 @@
-var EventCenter = {
+var NotificationCenter = {
 	events:[],
 	addObserver:function(target,selector,name,sender){
 		if(name != undefined && name != ""){

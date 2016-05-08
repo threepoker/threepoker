@@ -1,24 +1,24 @@
 {
-    "project_type":"javascript",
-    "debugMode":1,
-    "showFPS":true,
-    "frameRate":60,
-    "id":"gameCanvas",
-    "renderMode":0,
-    "engineDir":"frameworks/cocos2d-html5",
-    "modules":[
-        "cocos2d"
-    ],
-    "jsList":[
-        "src/PokerCard.js",
-        "src/resource.js",
-        "src/app.js",
-        "src/utils/EventCenter.js",
-        "src/common/Notification.js",
-        "src/mediator/ApplicationMediator.js",
-        "src/net/NetWork.js",
-        "src/net/GameProxy.js",
-        "src/net/MsgTag.js",
-        "src/utils/Utils.js"
-    ]
+  "project_type": "javascript",
+  "debugMode": 1,
+  "showFPS": true,
+  "frameRate": 60,
+  "id": "gameCanvas",
+  "renderMode": 0,
+  "engineDir": "frameworks/cocos2d-html5",
+  "modules": [
+    "cocos2d"
+  ],
+  "jsList": [
+    "src/PokerCard.js",
+    "src/resource.js",
+    "src/app.js",
+    "src/common/Notification.js",
+    "src/mediator/ApplicationMediator.js",
+    "src/net/NetWork.js",
+    "src/net/GameProxy.js",
+    "src/net/MsgTag.js",
+    "src/utils/Utils.js",
+    "src/utils/NotificationCenter.js"
+  ]
 }

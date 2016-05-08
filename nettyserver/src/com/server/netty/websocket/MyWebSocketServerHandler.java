@@ -1,9 +1,15 @@
 package com.server.netty.websocket;
 
+import com.server.Utils.NotificationCenter;
 import com.server.db.TableUserHandle;
+import com.server.game.proto.ProtoLogin;
+import com.server.netty.common.ChannelManager;
+import com.server.netty.common.DecodeMSG;
 import com.server.netty.common.Global;
+import com.server.netty.common.ProtoTag;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,6 +53,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		// 移除
 		Global.group.remove(ctx.channel());
+		ChannelManager.remove(ctx.channel());
 		System.out.println("客户端与服务端连接关闭");
 	}
 	
@@ -74,37 +81,18 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 			throw new UnsupportedOperationException(String.format(
 					"%s frame types not supported", frame.getClass().getName()));
 		}
-		// 返回应答消息
 		String request = ((TextWebSocketFrame) frame).text();
 		System.out.println("服务端收到：" + request);
-
-		JSONObject jsonObject = new JSONObject();
-		ArrayList<Integer> arrayList = new ArrayList<>();
-		arrayList.add(1);
-		arrayList.add(2);
-		arrayList.add(3);
 		try {
-			jsonObject.put("tag", 100);
-			jsonObject.put("status", 1);
-			jsonObject.put("result", "登录成功");
-			jsonObject.put("array",arrayList);
-		} catch (JSONException e) {
+			DecodeMSG.decode(request,ctx.channel());
+
+		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		TextWebSocketFrame tws = new TextWebSocketFrame(jsonObject.toString());
-		// 群发
-		Global.group.writeAndFlush(tws);
-		// 返回【谁发的发给谁】
-		// ctx.channel().writeAndFlush(tws);
-		
-		try {
-			JSONObject rj = new JSONObject(request);
-
-			TableUserHandle tableUserHandle = new TableUserHandle();
-			tableUserHandle.insertUser(rj.getString("userName"), rj.getString("password"), rj.getString("deviceId")
-					, rj.getString("nickName"), rj.getInt("channelId"), rj.getString("model"), rj.getString("version"), false);
-		} catch (JSONException e) {
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
