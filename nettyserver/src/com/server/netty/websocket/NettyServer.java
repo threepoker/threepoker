@@ -1,5 +1,7 @@
 package com.server.netty.websocket;
 
+import com.server.game.baseConfig.BaseConfigManager;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -20,6 +22,7 @@ public class NettyServer {
 		EventLoopGroup workGroup = new NioEventLoopGroup();
 		
 		try {
+			BaseConfigManager.getInstance().loadAllConfig();
 			
 			ServerBootstrap b = new ServerBootstrap();
 			b.group(bossGroup, workGroup);

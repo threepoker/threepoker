@@ -1,32 +1,18 @@
 package com.server.netty.websocket;
 
-import com.server.Utils.NotificationCenter;
-import com.server.db.TableUserHandle;
-import com.server.game.proto.ProtoLogin;
-import com.server.netty.common.ChannelManager;
-import com.server.netty.common.DecodeMSG;
+import com.server.game.UserManager;
+import com.server.netty.common.MsgManager;
 import com.server.netty.common.Global;
-import com.server.netty.common.ProtoTag;
-
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.logging.Level;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import sun.org.mozilla.javascript.internal.json.JsonParser;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -53,7 +39,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		// 移除
 		Global.group.remove(ctx.channel());
-		ChannelManager.remove(ctx.channel());
+		UserManager.getInstance().remove(ctx.channel());
 		System.out.println("客户端与服务端连接关闭");
 	}
 	
@@ -63,7 +49,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 		ctx.flush();
 	}
 	private void handlerWebSocketFrame(ChannelHandlerContext ctx,
-			WebSocketFrame frame) {
+			WebSocketFrame frame) throws SQLException {
 		// 判断是否关闭链路的指令
 		if (frame instanceof CloseWebSocketFrame) {
 			handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame
@@ -84,7 +70,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 		String request = ((TextWebSocketFrame) frame).text();
 		System.out.println("服务端收到：" + request);
 		try {
-			DecodeMSG.decode(request,ctx.channel());
+			MsgManager.getInstance().decode(request,ctx.channel());
 
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block

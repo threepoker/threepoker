@@ -4,7 +4,7 @@ var NetWork = {
 		that:null,
 		create:function(){ 
 			if(null != this.ws) return;
-			this.ws = new WebSocket("ws://localhost:8080/ws");//("ws://120.25.196.22:8080/ddd/ws");                    
+			this.ws = new WebSocket("ws://localhost:8080/ws");//("ws://120.25.196.22:8080/ddd/ws");                
 			
 			this.ws.onopen = function(e){ 
 				cc.log("onopen = "+e);

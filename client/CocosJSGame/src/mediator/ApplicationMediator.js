@@ -5,7 +5,7 @@ var ApplicationMediator = {
 			NotificationCenter.addObserver(ApplicationMediator, ApplicationMediator.onNeWorkError, NOTIFY_ONERROR, null);
 		},
 		onNeWorkOpen:function(data){
-			GameProxy.loginReq("cocos", "js", "123456", "前端", 1, "微软", "1.0.1");
+			GameProxy.loginReq("", "", "123456", "前端", 1, "微软", "1.0.1");
 		},
 		onNeWorkClose:function(data){
 			
