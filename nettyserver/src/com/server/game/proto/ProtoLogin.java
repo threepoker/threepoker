@@ -9,7 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.server.db.TableUserHandle;
-import com.server.game.UserManager;
+import com.server.game.manager.UserManager;
+import com.server.netty.common.MsgManager;
 
 
 public class ProtoLogin {
@@ -21,7 +22,14 @@ public class ProtoLogin {
 		return instance;
 	}
 
-	public void LoginRes(JSONObject data,Channel channel) throws JSONException, SQLException{
+	public void loginRes(Channel channel,int status ,String result) throws JSONException{
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("tag", ProtoTag.PROTOLOGIN.value);
+		jsonObject.put("result", result);
+		jsonObject.put("status", status);
+		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+	}
+	public void loginReq(JSONObject data,Channel channel) throws JSONException, SQLException{
 		String userNameString = data.getString("userName");
 		String deviceIdString = data.getString("deviceId");
 		int userId = 0;
@@ -29,7 +37,6 @@ public class ProtoLogin {
 		ResultSet resultSet = null;
 		String reasionString = "";
 		if (userNameString.length()>0) {
-			TableUserHandle instanceHandle = TableUserHandle.getInstance();
 			resultSet = TableUserHandle.getInstance().selectUser("userName", userNameString);
 			if (null!=resultSet && resultSet.next()) {
 				loginResult = isLoginSuccess(resultSet, data);
@@ -49,11 +56,14 @@ public class ProtoLogin {
 		}
 		if (loginResult) {//登录成功
 			UserManager.getInstance().add(userId, channel);
+			reasionString = "登录成功";
+			this.loginRes(channel, 1, reasionString);
+		}else {
+			reasionString = "登录失败";
+			this.loginRes(channel, 0, reasionString);
 		}
 		System.out.println("loginResult = "+loginResult);
-	}
-	public void LoginRep(int userId,int status,String result){
-		UserManager.getInstance().
+		
 	}
 	
 	private boolean isLoginSuccess(ResultSet resultSet,JSONObject data) throws JSONException, SQLException {

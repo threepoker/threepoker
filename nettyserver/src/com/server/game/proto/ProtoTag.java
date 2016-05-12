@@ -1,8 +1,9 @@
-package com.server.netty.common;
+package com.server.game.proto;
 
 public enum ProtoTag {
-	LOGIN(100);
-	
+	PROTOLOGIN(100),
+	PROTOENTERDESK(101),
+	PROTONOTIFYLEAVEDESK(102);
 	public final int value;
 	private ProtoTag(int value){
 		this.value = value; 

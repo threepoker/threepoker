@@ -1,15 +1,12 @@
 package com.server.netty.common;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-
+import com.server.game.proto.ProtoTag;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.server.Utils.NotificationCenter;
+import com.server.game.proto.ProtoDesk;
 import com.server.game.proto.ProtoLogin;
 
 public class MsgManager {
@@ -20,25 +17,25 @@ public class MsgManager {
 		}
 		return instance;
 	}
-	public void decode(String msg,Channel channel) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException{
-		int tag = 0;
-		try {
-			JSONObject rj = new JSONObject(msg);
-			tag = rj.getInt("tag");
-			if (ProtoTag.getEnumTag(tag) == ProtoTag.LOGIN) {
-				ProtoLogin.getInstance().LoginRes(rj,channel);					
-			}else{
-				NotificationCenter.getInstance().postNotification(Integer.toString(tag), rj);
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public String decode(String msg){
+		return msg;
 	}
 	public String encode(String msg){
 		return msg;
 	}
+	public void getMsg(String msg,Channel channel) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException, JSONException{
+		int tag = 0;
+		JSONObject rj = new JSONObject(decode(msg));
+		tag = rj.getInt("tag");
+		switch (ProtoTag.getEnumTag(tag)) {
+		case PROTOLOGIN:
+			ProtoLogin.getInstance().loginReq(rj,channel);	
+			break;
+		case PROTOENTERDESK:
+			ProtoDesk.getInstance().enterDeskReq(rj,channel);
+		}
+	}
 	public void sendMsg(String msg,Channel channel){
-		channel.writeAndFlush(msg);
+		channel.writeAndFlush(encode(msg));
 	}
 }

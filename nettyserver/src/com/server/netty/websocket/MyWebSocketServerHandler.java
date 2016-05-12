@@ -1,11 +1,14 @@
 package com.server.netty.websocket;
 
-import com.server.game.UserManager;
+import com.server.game.manager.UserManager;
 import com.server.netty.common.MsgManager;
 import com.server.netty.common.Global;
+
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
+
+import org.json.JSONException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -49,7 +52,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 		ctx.flush();
 	}
 	private void handlerWebSocketFrame(ChannelHandlerContext ctx,
-			WebSocketFrame frame) throws SQLException {
+			WebSocketFrame frame) throws SQLException, JSONException {
 		// 判断是否关闭链路的指令
 		if (frame instanceof CloseWebSocketFrame) {
 			handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame
@@ -70,7 +73,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 		String request = ((TextWebSocketFrame) frame).text();
 		System.out.println("服务端收到：" + request);
 		try {
-			MsgManager.getInstance().decode(request,ctx.channel());
+			MsgManager.getInstance().getMsg(request,ctx.channel());
 
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
