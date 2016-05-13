@@ -9,8 +9,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.server.db.TableUserHandle;
+import com.server.game.data.User;
 import com.server.game.manager.UserManager;
-import com.server.netty.common.MsgManager;
+import com.server.netty.websocket.MsgManager;
 
 
 public class ProtoLogin {
@@ -64,6 +65,23 @@ public class ProtoLogin {
 		}
 		System.out.println("loginResult = "+loginResult);
 		
+	}
+	public void getUserInfoRes(JSONObject data,Channel channel) throws JSONException{
+		JSONObject jsonRes = new JSONObject();
+		User user = UserManager.getInstance().getUser(data.getInt("userId"));
+		if (null != user) {
+			jsonRes.put("status", 1);
+			jsonRes.put("gold", user.getGold());
+			jsonRes.put("diamond", user.getDiamond());
+		}else{
+			jsonRes.put("status", 0);
+			jsonRes.put("result", "获取用户数据失败");
+		}
+		jsonRes.put("tag", ProtoTag.PROTOGETUSERINFO.value);
+		MsgManager.getInstance().sendMsg(jsonRes.toString(),channel);
+	}
+	public void getUserInfoReq(JSONObject data,Channel channel) throws JSONException{
+		getUserInfoRes(data,channel);
 	}
 	
 	private boolean isLoginSuccess(ResultSet resultSet,JSONObject data) throws JSONException, SQLException {

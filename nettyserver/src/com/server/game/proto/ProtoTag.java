@@ -2,8 +2,13 @@ package com.server.game.proto;
 
 public enum ProtoTag {
 	PROTOLOGIN(100),
-	PROTOENTERDESK(101),
-	PROTONOTIFYLEAVEDESK(102);
+	PROTOGETUSERINFO(101),
+	PROTOENTERDESK(102),
+	PROTOEXITDESK(103),
+	PROTONOTIFYENTERDESK(104),
+	PROTONOTIFYEXITDESK(105),
+	PROTOGETDESKINFO(106),
+	PROTOUPDATEGOLD(107);
 	public final int value;
 	private ProtoTag(int value){
 		this.value = value; 

@@ -2,6 +2,8 @@ package com.server.game.manager;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+
 import com.server.game.classic.Desk;
 import com.server.game.common.Const;
 import com.server.game.data.User;
@@ -14,7 +16,7 @@ public class DeskManager {
 		}
 		return instance;
 	}
-	public String enterDesk(User user,int level){
+	public String enterDesk(User user,int level) throws JSONException{
 		if (user.getGold()<BaseConfigManager.getInstance().getConfigDeskChip(level).getEnterMin()) {
 			return "金币不足";
 		}
@@ -26,7 +28,7 @@ public class DeskManager {
 		}
 		return Const.SUCCESS;
 	}
-	public String exitDesk(User user,int level){
+	public String exitDesk(User user) throws JSONException{
 		for (Desk desk : deskList) {
 			if (desk.getUserMap().get(user.getUserId()) != null) {
 				desk.removeUser(user);
@@ -39,5 +41,15 @@ public class DeskManager {
 		Desk desk = new Desk(level);
 		deskList.add(desk);
 		return desk;
+	}
+	public Desk getDesk(int userId){
+		for (Desk desk : deskList) {
+			for (User userIterUser : desk.getUserMap().values()) {
+				if (userId == userIterUser.getUserId()) {
+					return desk;
+				}
+			}
+		}
+		return null;
 	}
 }

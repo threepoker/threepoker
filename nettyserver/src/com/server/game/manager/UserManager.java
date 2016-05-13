@@ -27,6 +27,8 @@ public class UserManager {
 		if (null!=rSet && rSet.next()) {
 			user.setGold(rSet.getLong(rSet.findColumn("gold")));
 			user.setDiamond(rSet.getInt(rSet.findColumn("diamond")));
+			user.setUserName(rSet.getString(rSet.findColumn("nickName")));
+			user.setHead(rSet.getString(rSet.findColumn("head")));
 		}
 		remove(user.getUserId());
 		user.setChannel(channel);
@@ -67,6 +69,16 @@ public class UserManager {
         while(it.hasNext()){
         	User iterUser = it.next();
             if (channel == iterUser.getChannel()) {
+				return iterUser;
+			}
+        }
+        return null;
+	}
+	public User getUser(int userId){
+		Iterator<User> it = userList.iterator();
+        while(it.hasNext()){
+        	User iterUser = it.next();
+            if (userId == iterUser.getUserId()) {
 				return iterUser;
 			}
         }

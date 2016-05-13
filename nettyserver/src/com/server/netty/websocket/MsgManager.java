@@ -1,4 +1,4 @@
-package com.server.netty.common;
+package com.server.netty.websocket;
 
 import io.netty.channel.Channel;
 import com.server.game.proto.ProtoTag;

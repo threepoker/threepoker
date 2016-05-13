@@ -1,8 +1,6 @@
 package com.server.netty.websocket;
 
 import com.server.game.manager.UserManager;
-import com.server.netty.common.MsgManager;
-import com.server.netty.common.Global;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;

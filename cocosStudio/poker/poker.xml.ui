@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <UIProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <ProjectDir>F:\github\threepoker\cocosStudio\poker</ProjectDir>
+  <ProjectDir>K:\github\threepoker\cocosStudio\poker</ProjectDir>
   <Version>1.6.0.0</Version>
-  <Resources>F:\github\threepoker\cocosStudio\poker\Resources</Resources>
+  <Resources>K:\github\threepoker\cocosStudio\poker\Resources</Resources>
   <Name>poker</Name>
   <JsonFileName>poker.json</JsonFileName>
-  <JsonFolder>F:\github\threepoker\cocosStudio\poker\Json</JsonFolder>
+  <JsonFolder>K:\github\threepoker\cocosStudio\poker\Json</JsonFolder>
   <JsonList>
     <string>poker_1.json</string>
   </JsonList>
   <CanvasSize>
-    <Width>0</Width>
-    <Height>0</Height>
+    <Width>1280</Width>
+    <Height>720</Height>
   </CanvasSize>
-  <filePath>F:\github\threepoker\cocosStudio\poker\poker.xml.ui</filePath>
+  <filePath>K:\github\threepoker\cocosStudio\poker\poker.xml.ui</filePath>
   <ProjectType>UIProject</ProjectType>
   <ResRelativePath />
   <imageFileList />
