@@ -68,7 +68,7 @@ public class ProtoLogin {
 	}
 	public void getUserInfoRes(JSONObject data,Channel channel) throws JSONException{
 		JSONObject jsonRes = new JSONObject();
-		User user = UserManager.getInstance().getUser(data.getInt("userId"));
+		User user = UserManager.getInstance().getUser(channel);
 		if (null != user) {
 			jsonRes.put("status", 1);
 			jsonRes.put("gold", user.getGold());

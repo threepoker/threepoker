@@ -21,5 +21,5 @@
   <imageFileList />
   <imagePngList />
   <JsonSuffix>.json</JsonSuffix>
-  <CurrentUIJson>logo.json</CurrentUIJson>
+  <CurrentUIJson>desk.json</CurrentUIJson>
 </UIProject>

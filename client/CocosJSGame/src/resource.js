@@ -1,6 +1,6 @@
 var res = {
     GOLD : "res/ui/common/gold.png",
-    DESKBG:"res/ui/desk/bg.jpg",
+    DESKBG:"res/ui/desk/bg.png",
     HALLBG:"res/ui/hall/bg.png",
     HALLQUICKSTART:"res/ui/hall/quickStart.png",
     

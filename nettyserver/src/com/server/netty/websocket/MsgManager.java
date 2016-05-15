@@ -1,11 +1,20 @@
 package com.server.netty.websocket;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.CharsetUtil;
+
 import com.server.game.proto.ProtoTag;
+
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import com.server.game.proto.ProtoDesk;
 import com.server.game.proto.ProtoLogin;
 
@@ -24,6 +33,7 @@ public class MsgManager {
 		return msg;
 	}
 	public void getMsg(String msg,Channel channel) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException, JSONException{
+		System.out.println("getMsg = "+msg);
 		int tag = 0;
 		JSONObject rj = new JSONObject(decode(msg));
 		tag = rj.getInt("tag");
@@ -31,11 +41,18 @@ public class MsgManager {
 		case PROTOLOGIN:
 			ProtoLogin.getInstance().loginReq(rj,channel);	
 			break;
+		case PROTOGETUSERINFO:
+			ProtoLogin.getInstance().getUserInfoReq(rj,channel);	
+			break;
 		case PROTOENTERDESK:
 			ProtoDesk.getInstance().enterDeskReq(rj,channel);
+		default:
+			break;
 		}
 	}
 	public void sendMsg(String msg,Channel channel){
-		channel.writeAndFlush(encode(msg));
+		// 返回应答给客户端
+		System.out.println("sendMsg = "+msg);
+		channel.writeAndFlush(new TextWebSocketFrame(msg));
 	}
 }

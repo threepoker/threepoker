@@ -14,12 +14,14 @@
     "src/resource.js",
     "src/app.js",
     "src/common/Notification.js",
+    "src/data/User.js",
     "src/mediator/ApplicationMediator.js",
     "src/net/NetWork.js",
     "src/net/GameProxy.js",
     "src/net/MsgTag.js",
     "src/utils/Utils.js",
     "src/utils/NotificationCenter.js",
+    "src/view/Desk.js",
     "src/view/Hall.js",
     "src/view/Logo.js"
   ]

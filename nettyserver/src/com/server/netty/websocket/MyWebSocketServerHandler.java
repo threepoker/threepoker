@@ -69,7 +69,6 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 					"%s frame types not supported", frame.getClass().getName()));
 		}
 		String request = ((TextWebSocketFrame) frame).text();
-		System.out.println("服务端收到：" + request);
 		try {
 			MsgManager.getInstance().getMsg(request,ctx.channel());
 

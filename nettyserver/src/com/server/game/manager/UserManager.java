@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 import com.server.db.TableConfigDeskChipHandle;
 import com.server.db.TableUserFortuneHandle;
+import com.server.db.TableUserHandle;
 import com.server.game.data.ConfigDeskChip;
 import com.server.game.data.User;
 
@@ -27,6 +28,9 @@ public class UserManager {
 		if (null!=rSet && rSet.next()) {
 			user.setGold(rSet.getLong(rSet.findColumn("gold")));
 			user.setDiamond(rSet.getInt(rSet.findColumn("diamond")));
+		}
+		rSet = TableUserHandle.getInstance().selectUser("userId", userId);
+		if (null!=rSet && rSet.next()) {
 			user.setUserName(rSet.getString(rSet.findColumn("nickName")));
 			user.setHead(rSet.getString(rSet.findColumn("head")));
 		}
