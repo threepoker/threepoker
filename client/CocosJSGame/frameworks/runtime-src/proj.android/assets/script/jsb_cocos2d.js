@@ -26,7 +26,7 @@
 
 // CCConfig.js
 //
-cc.ENGINE_VERSION = "Cocos2d-JS v3.3 RC0";
+cc.ENGINE_VERSION = "Cocos2d-JS v3.5";
 
 cc.FIX_ARTIFACTS_BY_STRECHING_TEXEL = 0;
 cc.DIRECTOR_STATS_POSITION = {x: 0, y: 0};
@@ -1461,6 +1461,7 @@ cc.TMXLayer.extend = cc.Class.extend;
 cc.TMXTiledMap.extend = cc.Class.extend;
 cc.TMXMapInfo.extend = cc.Class.extend;
 cc.TransitionScene.extend = cc.Class.extend;
+cc.GLProgram.extend = cc.Class.extend;
 
 
 // Cocos2d-html5 supports multi scene resources preloading.
@@ -2171,7 +2172,6 @@ var templateSetBlendFunc = function(src, dst) {
     else
         blendf = {src: src, dst: dst};
     this._setBlendFunc(blendf);
-    var b = this.getBlendFunc();
 };
 for (var i = 0, l = protoHasBlend.length; i < l; i++) {
     var proto = protoHasBlend[i];
@@ -2799,3 +2799,27 @@ cc.LabelTTF.prototype.setDimensions = function (dim, height) {
     }
     this._setDimensions(dim);
 };
+
+
+//
+// Label adaptation to LabelTTF/LabelBMFont/LabelAtlas
+//
+_p = cc.Label.prototype;
+_p.enableStroke = _p.enableOutline;
+_p.setBoundingWidth = _p.setWidth;
+_p.setBoundingHeight = _p.setHeight;
+
+
+//
+// 3D module rename to jsb namespace
+//
+jsb.BaseLight = cc.BaseLight;
+delete cc.BaseLight;
+jsb.DirectionLight = cc.DirectionLight;
+delete cc.DirectionLight;
+jsb.PointLight = cc.PointLight;
+delete cc.PointLight;
+jsb.SpotLight = cc.SpotLight;
+delete cc.SpotLight;
+jsb.AmbientLight = cc.AmbientLight;
+delete cc.AmbientLight;

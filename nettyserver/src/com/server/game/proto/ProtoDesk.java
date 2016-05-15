@@ -1,5 +1,7 @@
 package com.server.game.proto;
 
+import java.util.Iterator;
+
 import io.netty.channel.Channel;
 
 import org.json.JSONException;
@@ -7,6 +9,8 @@ import org.json.JSONObject;
 
 import com.server.game.classic.Desk;
 import com.server.game.common.Const;
+import com.server.game.data.BaseConfig;
+import com.server.game.data.DeskUserData;
 import com.server.game.data.User;
 import com.server.game.manager.DeskManager;
 import com.server.game.manager.UserManager;
@@ -84,8 +88,24 @@ public class ProtoDesk {
 		int userNum = desk.getUserMap().size();
 		jsonObject.put("playerNum", userNum);
 		jsonObject.put("status", 0);
-		for (int i = 0; i < userNum; i++) {
-			
+		int index = 0;
+		for (User userIterUser : desk.getUserMap().values()) {
+			jsonObject.put(index+"_userId", userIterUser.getUserId());
+			jsonObject.put(index+"_userGold", userIterUser.getGold());
+			DeskUserData deskUserData = desk.getDeskUserData(userIterUser.getUserId());
+			if (null != deskUserData) {
+				jsonObject.put(index+"_userPutInGold", deskUserData.getPutInGold());
+				jsonObject.put(index+"_userIsPlaying", deskUserData.isPlaying());
+				jsonObject.put(index+"_userIsSeeCard", deskUserData.isSeeCard());
+				jsonObject.put(index+"_userIsGiveUp", deskUserData.isGiveUp());
+			}
+			jsonObject.put(index+"_userPos", userIterUser.getPos());
 		}
+		jsonObject.put("putIntoTotalGold", desk.getPutIntoTotalGold());
+		jsonObject.put("singlePutIntoGold", desk.getSinglePutIntoGold());
+		jsonObject.put("currentRound", desk.getCurrentRound());
+		jsonObject.put("maxRound", BaseConfig.getInstance().MAXROUND);
+		jsonObject.put("curTurnUserId ", desk.getCurrentRound());
+		jsonObject.put("curTurnEndTime  ", desk.getCurTurnEndTime());
 	}
 }

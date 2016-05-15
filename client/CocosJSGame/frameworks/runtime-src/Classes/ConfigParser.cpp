@@ -10,8 +10,8 @@
 #define CONSOLE_PORT 6050
 #define UPLOAD_PORT 6060
 #define DEBUG_PORT 5086
-#define WIN_WIDTH   450
-#define WIN_HEIGHT  800
+#define WIN_WIDTH   960
+#define WIN_HEIGHT  640
 
 // ConfigParser
 ConfigParser *ConfigParser::s_sharedConfigParserInstance = NULL;

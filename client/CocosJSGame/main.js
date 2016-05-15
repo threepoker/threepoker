@@ -48,14 +48,20 @@
  */
 
 cc.game.onStart = function(){
+    if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
+        document.body.removeChild(document.getElementById("cocosLoading"));
+
+    // Pass true to enable retina display, disabled by default to improve performance
+    cc.view.enableRetina(false);
+    // Adjust viewport meta
     cc.view.adjustViewPort(true);
-    cc.view.setDesignResolutionSize(450, 800, cc.ResolutionPolicy.SHOW_ALL);
+    cc.view.setDesignResolutionSize(1280, 720, cc.ResolutionPolicy.SHOW_ALL);
     cc.view.resizeWithBrowserSize(true);
     //load resources
     cc.LoaderScene.preload(g_resources, function () {
     	ApplicationMediator.RegisterEvent();
     	GameProxy.RegisterEvent();
-        cc.director.runScene(new HelloWorldScene());
+        cc.director.runScene(new LogoScene());
     }, this);
 };
 cc.game.run();

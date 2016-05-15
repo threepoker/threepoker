@@ -34,7 +34,10 @@ var NetWork = {
 			if(null!=NetWork.ws){ 
 				this.ws.send(msg);
 			}else{
-				NetWork.create();
+				NetWork.openNet();
 			}
+		},
+		openNet:function(){
+			NetWork.create();			
 		}
 }

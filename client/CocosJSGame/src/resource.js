@@ -1,10 +1,16 @@
 var res = {
-    POKER_PNG : "res/poker/poker.png",
-    POKER_PLIST : "res/poker/poker.plist"
+    GOLD : "res/ui/common/gold.png",
+    DESKBG:"res/ui/desk/bg.jpg",
+    HALLBG:"res/ui/hall/bg.png",
+    HALLQUICKSTART:"res/ui/hall/quickStart.png",
+    
+    HALLJSON:"res/ui/hall.json",
+    LOGOJSON:"res/ui/logo.json",
+    DESKJSON:"res/ui/desk.json"
 };
 
 var textArr = [
-               
+    
 ];
 
 var g_resources = g_resources || [];

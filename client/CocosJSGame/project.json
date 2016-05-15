@@ -7,7 +7,7 @@
   "renderMode": 0,
   "engineDir": "frameworks/cocos2d-html5",
   "modules": [
-    "cocos2d"
+    "cocos2d","cocostudio"
   ],
   "jsList": [
     "src/PokerCard.js",
@@ -19,6 +19,8 @@
     "src/net/GameProxy.js",
     "src/net/MsgTag.js",
     "src/utils/Utils.js",
-    "src/utils/NotificationCenter.js"
+    "src/utils/NotificationCenter.js",
+    "src/view/Hall.js",
+    "src/view/Logo.js"
   ]
 }

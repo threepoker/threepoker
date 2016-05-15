@@ -5,66 +5,74 @@ var HelloWorldLayer = cc.Layer.extend({
         //////////////////////////////
         // 1. super init first
         this._super();
-        cc.sys.dump();
-        if(cc.sysbrowserType != cc.sys.BROWSER_TYPE_UNKNOWN ){//浏览器
-        	cc.spriteFrameCache.addSpriteFrames(res.POKER_PLIST,res.POKER_PNG);
-        }else{//客户端
-        	cc.SpriteFrameCache.getInstance().addSpriteFrames(res.POKER_PLIST,res.POKER_PNG);        	
-        }
 
-        
-        this.card1 = new PokerCard();
-        this.card1.x = cc.winSize.width/2;
-        this.card1.y = cc.winSize.height/2;
-        this.addChild(this.card1);
-        
-        this.card2 = new PokerCard();
-        this.card2.x = cc.winSize.width/2 + 30;
-        this.card2.y = cc.winSize.height/2;
-        this.addChild(this.card2);
-        
-        this.card3 = new PokerCard();
-        this.card3.x = cc.winSize.width/2 + 60;
-        this.card3.y = cc.winSize.height/2;
-        this.addChild(this.card3);
-        
-        var touchBtn = new cc.ControlButton();
-        
+        /////////////////////////////
+        // 2. add a menu item with "X" image, which is clicked to quit the program
+        //    you may modify it.
+        // ask the window size
+        var size = cc.winSize;
+
+        // add a "close" icon to exit the progress. it's an autorelease object
+        var closeItem = new cc.MenuItemImage(
+            res.CloseNormal_png,
+            res.CloseSelected_png,
+            function () {
+                cc.log("Menu is clicked!");
+            }, this);
+        closeItem.attr({
+            x: size.width - 20,
+            y: 20,
+            anchorX: 0.5,
+            anchorY: 0.5
+        });
+
+        var menu = new cc.Menu(closeItem);
+        menu.x = 0;
+        menu.y = 0;
+        this.addChild(menu, 1);
+
+        /////////////////////////////
+        // 3. add your codes below...
+        // add a label shows "Hello World"
+        // create and initialize a label
+        var helloLabel = new cc.LabelTTF("Hello World", "Arial", 38);
+        // position the label on the center of the screen
+        helloLabel.x = size.width / 2;
+        helloLabel.y = 0;
+        // add the label as a child to this layer
+        this.addChild(helloLabel, 5);
+
+        // add "HelloWorld" splash screen"
+        this.sprite = new cc.Sprite(res.HelloWorld_png);
+        this.sprite.attr({
+            x: size.width / 2,
+            y: size.height / 2,
+            scale: 0.5,
+            rotation: 180
+        });
+        this.addChild(this.sprite, 0);
+
+        this.sprite.runAction(
+            cc.sequence(
+                cc.rotateTo(2, 0),
+                cc.scaleTo(2, 1, 1)
+            )
+        );
+        helloLabel.runAction(
+            cc.spawn(
+                cc.moveBy(2.5, cc.p(0, size.height - 40)),
+                cc.tintTo(2.5,255,125,0)
+            )
+        );
         return true;
-    },
-
-    onGetCards:function(data){
-    	cc.log("data = "+data);
-    	var dataJson = eval('('+data+')');
-    	cc.log("card0 = "+dataJson["card0"]);
-    	this.card1.setCardValue(dataJson["card0"]);
-    	this.card1.seeCard();
-    	
-    	this.card2.setCardValue(dataJson["card1"]);
-    	this.card2.seeCard();
-    	
-    	this.card3.setCardValue(dataJson["card2"]);
-    	this.card3.seeCard();
-    },
-    onEnter:function (){
-    	NotificationCenter.addObserver(this,this.onGetCards, MSGTAG.GETCARD, null);
-    	NetWork.sendMSG("");
-    	this._super();
-    },
-
-    onExit:function (){
-    	NotificationCenter.removeObserver(this);
-    	this._super();
-    },
-	   
+    }
 });
 
 var HelloWorldScene = cc.Scene.extend({
     onEnter:function () {
-        this._super(); 
+        this._super();
         var layer = new HelloWorldLayer();
         this.addChild(layer);
-        
     }
-});      
-  
+});
+

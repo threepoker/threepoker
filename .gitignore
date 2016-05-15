@@ -58,5 +58,6 @@ Temporary Items
 /client/CocosJSGame/frameworks/runtime-src/proj.android/obj/
 /client/CocosJSGame/frameworks/runtime-src/proj.android/bin/
 /client/CocosJSGame/frameworks/runtime-src/proj.android/gen/
+/client/CocosJSGame/tools/
 /server/ddd/.myumldata
 /server/ddd/.settings/com.genuitec.eclipse.core.prefs
