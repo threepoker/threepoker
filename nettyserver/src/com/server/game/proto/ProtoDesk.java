@@ -30,7 +30,7 @@ public class ProtoDesk {
 	}
 	public void enterDeskRes(Channel channel,String res) throws JSONException{
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("tag", ProtoTag.PROTONOTIFYEXITDESK.value);
+		jsonObject.put("tag", ProtoTag.PROTOENTERDESK.value);
 		if (Const.SUCCESS == res) {
 			jsonObject.put("status", 1);
 		}else {

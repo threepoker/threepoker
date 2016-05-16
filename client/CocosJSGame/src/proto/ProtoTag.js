@@ -1,4 +1,4 @@
-var MSGTAG = {
+var ProtoTag = {
 		LOGIN:100,
 		GETUSERINFO:101,
 		ENTERDESK:102,

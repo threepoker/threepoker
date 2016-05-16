@@ -58,9 +58,10 @@ cc.game.onStart = function(){
     cc.view.setDesignResolutionSize(1280, 720, cc.ResolutionPolicy.SHOW_ALL);
     cc.view.resizeWithBrowserSize(true);
     //load resources
+    ApplicationMediator.RegisterEvent();
+    ProtoLogin.RegisterEvent();
+    ProtoDesk.RegisterEvent();
     cc.LoaderScene.preload(g_resources, function () {
-    	ApplicationMediator.RegisterEvent();
-    	GameProxy.RegisterEvent();
         cc.director.runScene(new LogoScene());
     }, this);
 };

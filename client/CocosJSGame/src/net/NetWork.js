@@ -4,11 +4,11 @@ var NetWork = {
 		that:null,
 		create:function(){ 
 			if(null != this.ws) return;
-			this.ws = new WebSocket("ws://120.25.196.22:8080/ws");//("ws://120.25.196.22:8080/ddd/ws");                
+			this.ws = new WebSocket("ws://localhost:8080/ws");//("ws://120.25.196.22:8080/ddd/ws");                
 			
 			this.ws.onopen = function(e){ 
 				cc.log("onopen = "+e);
-				NotificationCenter.postNotification(NOTIFY_ONOPEN);
+				NotificationCenter.postNotification(NotificationTag.NOTIFY_ONOPEN);
 			}; 
 
 			this.ws.onmessage = function(message){ 
@@ -21,12 +21,12 @@ var NetWork = {
 			};	
 			this.ws.onclose = function(e){ 
 				cc.log("onclose = "+e);
-				NotificationCenter.postNotification(NOTIFY_ONCLOSE);
+				NotificationCenter.postNotification(NotificationTag.NOTIFY_ONCLOSE);
 				this.ws = null;
 			};
 			this.ws.onerror = function (e) {   
 				cc.log("onerror = "+e);
-				NotificationCenter.postNotification(NOTIFY_ONERROR);
+				NotificationCenter.postNotification(NotificationTag.NOTIFY_ONERROR);
 			};
 		},
 		sendMSG:function(msg){ 

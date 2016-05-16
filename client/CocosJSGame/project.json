@@ -1,28 +1,30 @@
 {
-  "project_type": "javascript",
-  "debugMode": 1,
-  "showFPS": true,
-  "frameRate": 60,
-  "id": "gameCanvas",
-  "renderMode": 0,
-  "engineDir": "frameworks/cocos2d-html5",
-  "modules": [
-    "cocos2d","cocostudio"
-  ],
-  "jsList": [
-    "src/PokerCard.js",
-    "src/resource.js",
-    "src/app.js",
-    "src/common/Notification.js",
-    "src/data/User.js",
-    "src/mediator/ApplicationMediator.js",
-    "src/net/NetWork.js",
-    "src/net/GameProxy.js",
-    "src/net/MsgTag.js",
-    "src/utils/Utils.js",
-    "src/utils/NotificationCenter.js",
-    "src/view/Desk.js",
-    "src/view/Hall.js",
-    "src/view/Logo.js"
-  ]
+    "project_type":"javascript",
+    "debugMode":1,
+    "showFPS":true,
+    "frameRate":60,
+    "id":"gameCanvas",
+    "renderMode":0,
+    "engineDir":"frameworks/cocos2d-html5",
+    "modules":[
+        "cocos2d",
+        "cocostudio"
+    ],
+    "jsList":[
+        "src/PokerCard.js",
+        "src/resource.js",
+        "src/app.js",
+        "src/data/User.js",
+        "src/mediator/ApplicationMediator.js",
+        "src/net/NetWork.js",
+        "src/proto/ProtoTag.js",
+        "src/utils/Utils.js",
+        "src/utils/NotificationTag.js",
+        "src/utils/NotificationCenter.js",
+        "src/view/Desk.js",
+        "src/view/Hall.js",
+        "src/view/Logo.js",
+        "src/proto/ProtoDesk.js",
+        "src/proto/ProtoLogin.js"
+    ]
 }

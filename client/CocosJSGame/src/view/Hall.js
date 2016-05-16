@@ -28,13 +28,7 @@ var Hall = cc.Layer.extend({
 	},
 	btnQuickTouch:function(sender,type){
 		if(type==ccui.Widget.TOUCH_ENDED){
-			var transitionTime = 0.5;
-			// 创建下一个场景
-			var deskScene = new DeskScene();
-			// 使用下一个场景创建转场特效场景
-			var transitionScene = new cc.TransitionProgressInOut(transitionTime, deskScene);
-			// 替换运行场景为转场特效场景
-			cc.director.runScene(transitionScene);
+			ProtoDesk.enterDeskReq(0);
 		}
 	},
 

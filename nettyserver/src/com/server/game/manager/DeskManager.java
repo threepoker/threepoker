@@ -17,6 +17,9 @@ public class DeskManager {
 		return instance;
 	}
 	public String enterDesk(User user,int level) throws JSONException{
+		if(null == BaseConfigManager.getInstance().getConfigDeskChip(level)){
+			return "获取牌桌失败";
+		}
 		if (user.getGold()<BaseConfigManager.getInstance().getConfigDeskChip(level).getEnterMin()) {
 			return "金币不足";
 		}

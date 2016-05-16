@@ -47,6 +47,8 @@ public class BaseConfigManager {
 		}
 	}
 	private void parseConfigDeckChip() throws SQLException{
+		Map<Integer, ConfigDeskChip> configChips = BaseConfig.getInstance().configChips;
+		configChips.clear();
 		ResultSet rSet = TableConfigDeskChipHandle.getInstance().select();
 		while (null!=rSet && rSet.next()) {
 			ConfigDeskChip configDeskChip = new ConfigDeskChip();
@@ -60,6 +62,7 @@ public class BaseConfigManager {
 			for (String chipString : chipStrigArray) {
 				configDeskChip.getChips().add(Integer.parseInt(chipString));
 			}
+			configChips.put(configDeskChip.getLevel(), configDeskChip);
 		}
 	}
 	

@@ -20,6 +20,7 @@ var Desk = cc.Layer.extend({
 		return true;
 	},
 	onEnter:function (){
+		NotificationCenter.addObserver(ProtoDesk, ProtoDesk.getDeskInfoRes, ProtoTag.GETDESKINFO, null);
 		this._super();
 	},
 
@@ -27,17 +28,13 @@ var Desk = cc.Layer.extend({
 		NotificationCenter.removeObserver(this);
 		this._super();
 	},
+	
 	btnBackTouch:function(sender,type){
 		if(type==ccui.Widget.TOUCH_ENDED){
-			// 转场特效持续两秒
-			var transitionTime = 0.5;
-			// 创建下一个场景
-			var hallScene = new HallScene();
-			// 使用下一个场景创建转场特效场景
-			var transitionScene = new cc.TransitionProgressInOut(transitionTime, hallScene);
-			// 替换运行场景为转场特效场景
-			cc.director.runScene(transitionScene);
+			ProtoDesk.exitDeskReq();
 		}
 	},
-
+	getDeskInfoRes:function(data){
+		
+	},
 });
