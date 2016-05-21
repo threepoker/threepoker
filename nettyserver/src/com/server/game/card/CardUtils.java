@@ -453,9 +453,12 @@ public class CardUtils {
 		default:
 			break;
 		}
+		if (cards.size() != 3) {
+			cards = getRandomCards();
+		}
 		return cards;
 	}
-	public void reSetcards_(){
+	public void reSetcards(){
 		cards_.clear();
 		for (int i = 1; i < 62; i++) {
 			if (14 == i || 15==i || 16==i || 30==i || 31==i || 32==i || 46==i || 47==i || 48==i) {
@@ -510,7 +513,9 @@ public class CardUtils {
 			for (int j = i+1; j < pCards.size(); j++) {
 				int iCard = (int)(pCards.get(i) & 0x0F);
 				int jCard = (int)(pCards.get(j) & 0x0F);
-				if (1 == iCard || iCard > jCard) {
+				iCard = 1==iCard ? 14 : iCard;
+				jCard = 1==jCard ? 14 : jCard;
+				if (iCard > jCard) {
 					int temp = pCards.get(i);
 					pCards.set(i, pCards.get(j));
 					pCards.set(j, temp);
@@ -518,11 +523,5 @@ public class CardUtils {
 			}
 		}
 		return pCards;
-	}
-	
-	
-	
-	
-	
-	
+	}	
 }

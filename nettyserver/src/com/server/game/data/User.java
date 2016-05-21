@@ -8,8 +8,8 @@ public class User {
 	private String userName;
 	private long gold = 0;
 	private int diamond = 0;
-	private int pos;
 	private String head;
+	private DeskUserData deskUserData=null;
 	public User(int userId){
 		this.userId = userId;
 	}
@@ -45,12 +45,6 @@ public class User {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public int getPos() {
-		return pos;
-	}
-	public void setPos(int pos) {
-		this.pos = pos;
-	}
 	public String getHead() {
 		return head;
 	}
@@ -59,5 +53,11 @@ public class User {
 	}
 	public boolean isActive() {
 		return channel.isActive();
+	}
+	public DeskUserData getDeskUserData() {
+		return deskUserData;
+	}
+	public void setDeskUserData(DeskUserData deskUserData) {
+		this.deskUserData = deskUserData;
 	}
 }

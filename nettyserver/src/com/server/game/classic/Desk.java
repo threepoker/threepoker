@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.json.JSONException;
 
+import com.server.game.card.CardUtils;
 import com.server.game.data.BaseConfig;
 import com.server.game.data.DeskUserData;
 import com.server.game.data.User;
@@ -12,13 +13,15 @@ import com.server.game.proto.ProtoDesk;
 public class Desk {
 	private int level;
 	private Map<Integer, User> userMap = new HashMap<Integer,User>();
-	private Map<Integer, DeskUserData> userDataMap = new HashMap<Integer,DeskUserData>();
 	private int putIntoTotalGold = 0;
 	private int	singlePutIntoGold = 0;
 	private int currentRound = 0;
 	private int maxRound = BaseConfig.getInstance().MAXROUND;
 	private int curTurnUserId = 0;
 	private int curTurnEndTime = 0;//秒
+	private boolean status =false;//true在玩，false等待
+	private CardUtils cardUtils = new CardUtils();
+	private User curOperateUser;
 	public Desk(int level) {
 		this.level = level;
 	}
@@ -28,34 +31,81 @@ public class Desk {
 		}
 		int pos = getPos();
 		userMap.put(user.getUserId(), user);
-		user.setPos(pos);
 		DeskUserData deskUserData = new DeskUserData(user.getUserId());
-		this.userDataMap.put(user.getUserId(), deskUserData);
+		deskUserData.setPos(pos);
+		user.setDeskUserData(deskUserData);	
+		if (1 == userMap.size()) {
+			setBanker(user);
+		}
+		dealCard();
 	}
 	public void removeUser(User user) throws JSONException{
+		user.setDeskUserData(null);
 		userMap.remove(user.getUserId());
 		for (User userIterUser : userMap.values()) {
 			ProtoDesk.getInstance().notifyExitDeskRes(userIterUser.getChannel(),user);
 		}
-	}
-	
+	}	
 	
 	public int getLevel() {
 		return level;
 	}
 	public Map<Integer, User> getUserMap() {
 		return userMap;
-	}	
-	public Map<Integer, DeskUserData> getUserDataMap() {
-		return userDataMap;
 	}
 	public DeskUserData getDeskUserData(int userId){
-		for (DeskUserData deskUserData : userDataMap.values()) {
-			if (deskUserData.getUserId() == userId) {
-				return deskUserData;
+		for (User user : userMap.values()) {
+			if (user.getUserId() == userId) {
+				return user.getDeskUserData();
 			}
 		}
 		return null;
+	}
+	/*
+	 * 游戏逻辑
+	 */
+	private void dealCard() throws JSONException{
+		if (status || userMap.size()<2) {
+			return;
+		}
+		status = true;
+		cardUtils.reSetcards();
+		for (User user : userMap.values()) {
+			user.getDeskUserData().reSet();
+			user.getDeskUserData().setCards(cardUtils.getRandomCards());
+			ProtoDesk.getInstance().notifyDealCardRes(user.getChannel(), getBanker().getUserId());
+		}
+	}
+	private void round(){
+		
+	}
+	User getNextRoundUser(User user){
+		User nextRoundUser = null;
+		int pos = user.getDeskUserData().getPos();
+		for (int i = 0; i < 5; i++) {
+			pos = (pos+1)%5;
+			nextRoundUser = getUserByPos(pos);
+			if (null != nextRoundUser) {
+				break;
+			}
+		}
+		return nextRoundUser;
+	}
+	
+	void setBanker(User user){
+		for (User userIter : userMap.values()) {
+			userIter.getDeskUserData().setBanker(user.getUserId() == userIter.getUserId());
+		}
+	}
+	User getBanker(){
+		User bankerUser = null;
+		for (User user : userMap.values()) {
+			if (user.getDeskUserData().isBanker()) {
+				bankerUser = user;
+				break;
+			}
+		}
+		return bankerUser;
 	}
 	public int getPutIntoTotalGold() {
 		return putIntoTotalGold;
@@ -88,13 +138,13 @@ public class Desk {
 		this.curTurnEndTime = curTurnEndTime;
 	}
 	/////////////////////////位置管理//////////////////////
-	//一桌五个人 分：0、1、2、3、4号座位
+	//一桌五个人 ,分：0、1、2、3、4号座位
 	public int getPos(){
 		int result = -1;
 		for (int i = 0; i < 5; i++) {
 			result = i;
 			for (User user : userMap.values()) {
-				if (i == user.getPos()) {
+				if (i == user.getDeskUserData().getPos()) {
 					result = -1;
 					break;
 				}
@@ -105,5 +155,12 @@ public class Desk {
 		}
 		return result;
 	}
-	
+	public User getUserByPos(int pos) {
+		for(User user : userMap.values()){
+			if (user.getDeskUserData().getPos() == pos) {
+				return user;
+			}
+		}
+		return null;
+	}
 }

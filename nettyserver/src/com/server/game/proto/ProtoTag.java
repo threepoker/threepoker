@@ -8,7 +8,9 @@ public enum ProtoTag {
 	PROTONOTIFYENTERDESK(104),
 	PROTONOTIFYEXITDESK(105),
 	PROTOGETDESKINFO(106),
-	PROTOUPDATEGOLD(107);
+	PROTOUPDATEGOLD(107),
+	PROTONOTIFYDEALCARD(108),
+	PROTONOTIFYROUND(109);
 	public final int value;
 	private ProtoTag(int value){
 		this.value = value; 

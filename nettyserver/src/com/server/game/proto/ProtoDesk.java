@@ -45,7 +45,7 @@ public class ProtoDesk {
 		jsonObject.put("userId", user.getUserId());
 		jsonObject.put("nickName",user.getUserName());
 		jsonObject.put("gold", user.getGold());
-		jsonObject.put("pos", user.getPos());
+		jsonObject.put("pos", user.getDeskUserData().getPos());
 		jsonObject.put("head", user.getHead());
 		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
 	}
@@ -99,7 +99,7 @@ public class ProtoDesk {
 				jsonObject.put(index+"_userIsSeeCard", deskUserData.isSeeCard());
 				jsonObject.put(index+"_userIsGiveUp", deskUserData.isGiveUp());
 			}
-			jsonObject.put(index+"_userPos", userIterUser.getPos());
+			jsonObject.put(index+"_userPos", userIterUser.getDeskUserData().getPos());
 		}
 		jsonObject.put("putIntoTotalGold", desk.getPutIntoTotalGold());
 		jsonObject.put("singlePutIntoGold", desk.getSinglePutIntoGold());
@@ -107,5 +107,11 @@ public class ProtoDesk {
 		jsonObject.put("maxRound", BaseConfig.getInstance().MAXROUND);
 		jsonObject.put("curTurnUserId ", desk.getCurrentRound());
 		jsonObject.put("curTurnEndTime  ", desk.getCurTurnEndTime());
+	}
+	public void notifyDealCardRes(Channel channel,int bankerId) throws JSONException{
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("tag", ProtoTag.PROTONOTIFYDEALCARD.value);
+		jsonObject.put("bankerId", bankerId);
+		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
 	}
 }

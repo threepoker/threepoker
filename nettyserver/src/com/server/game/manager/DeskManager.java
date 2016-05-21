@@ -35,6 +35,9 @@ public class DeskManager {
 		for (Desk desk : deskList) {
 			if (desk.getUserMap().get(user.getUserId()) != null) {
 				desk.removeUser(user);
+				if (0==desk.getUserMap().size()) {
+					deskList.remove(desk);
+				}
 				break;
 			}
 		}
