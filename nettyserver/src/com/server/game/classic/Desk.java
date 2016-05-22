@@ -4,10 +4,12 @@ import java.util.Map;
 
 import org.json.JSONException;
 
+import com.server.Utils.XFLog;
 import com.server.game.card.CardUtils;
 import com.server.game.data.BaseConfig;
 import com.server.game.data.DeskUserData;
 import com.server.game.data.User;
+import com.server.game.manager.TimerManager;
 import com.server.game.proto.ProtoDesk;
 
 public class Desk {
@@ -17,21 +19,22 @@ public class Desk {
 	private int	singlePutIntoGold = 0;
 	private int currentRound = 0;
 	private int maxRound = BaseConfig.getInstance().MAXROUND;
-	private int curTurnUserId = 0;
 	private int curTurnEndTime = 0;//秒
 	private boolean status =false;//true在玩，false等待
 	private CardUtils cardUtils = new CardUtils();
-	private User curOperateUser;
+	private User curTurnUser;
+	private int roundCountDown = 0;
+	private final int ROUNDMAXTIME = 8;
 	public Desk(int level) {
 		this.level = level;
 	}
 	public void addUser(User user) throws JSONException{
 		for (User userIterUser : userMap.values()) {
-			ProtoDesk.getInstance().notifyEnterDeskRes(userIterUser.getChannel(),user);
+			ProtoDesk.getInstance().notifyEnterDeskRes(userIterUser.getChannel(),userIterUser);
 		}
 		int pos = getPos();
 		userMap.put(user.getUserId(), user);
-		DeskUserData deskUserData = new DeskUserData(user.getUserId());
+		DeskUserData deskUserData = new DeskUserData(user.getUserId(),this);
 		deskUserData.setPos(pos);
 		user.setDeskUserData(deskUserData);	
 		if (1 == userMap.size()) {
@@ -53,6 +56,15 @@ public class Desk {
 	public Map<Integer, User> getUserMap() {
 		return userMap;
 	}
+	public Map<Integer, User> getNoGiveUpPlayingMap(){
+		Map<Integer, User> noGiveUpPlayingMap = new HashMap<Integer,User>();
+		for(User user : userMap.values()){
+			if (user.getDeskUserData().isPlaying() && !user.getDeskUserData().isGiveUp()) {
+				noGiveUpPlayingMap.put(user.getUserId(), user);
+			}
+		}
+		return noGiveUpPlayingMap;
+	}
 	public DeskUserData getDeskUserData(int userId){
 		for (User user : userMap.values()) {
 			if (user.getUserId() == userId) {
@@ -71,23 +83,53 @@ public class Desk {
 		status = true;
 		cardUtils.reSetcards();
 		for (User user : userMap.values()) {
-			user.getDeskUserData().reSet();
+			user.getDeskUserData().gameBegin();
 			user.getDeskUserData().setCards(cardUtils.getRandomCards());
 			ProtoDesk.getInstance().notifyDealCardRes(user.getChannel(), getBanker().getUserId());
 		}
+		long dealCardTime = 2000;
+		TimerManager.getInstance().scheduleOnce(this, "startRound",dealCardTime);
+		curTurnUser = getNextRoundUser(getBanker());
 	}
-	private void round(){
-		
+	public void countDown() {
+		setRoundCountDown(getRoundCountDown()-1);
+		XFLog.out("roundCountDown = "+roundCountDown);
+		if (roundCountDown<=0) {
+			curTurnUser.getDeskUserData().setGiveUp(true);
+			curTurnUser = getNextRoundUser(curTurnUser);
+			if (null == curTurnUser) {
+				return;
+			}
+			startRound();
+		}
 	}
-	User getNextRoundUser(User user){
+	public void startRound(){
+		round();
+		setRoundCountDown(ROUNDMAXTIME);
+		TimerManager.getInstance().schedule(this, "countDown",1000,ROUNDMAXTIME);
+	}
+	public void round(){;
+		for (User user : userMap.values()) {
+			ProtoDesk.getInstance().notifyRoundRes(user);
+		}
+	}
+	private User getNextRoundUser(User user){
 		User nextRoundUser = null;
 		int pos = user.getDeskUserData().getPos();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 4; i++) {
 			pos = (pos+1)%5;
-			nextRoundUser = getUserByPos(pos);
-			if (null != nextRoundUser) {
+			User posUser = getUserByPos(pos);
+			if (null != posUser 
+					&& getDeskUserData(posUser.getUserId()).isPlaying()
+					&& !getDeskUserData(posUser.getUserId()).isGiveUp()) {
+				nextRoundUser = posUser;
 				break;
 			}
+		}
+		//仅剩下一个没弃牌正在游戏中的玩家
+		if (1 == getNoGiveUpPlayingMap().size()) {
+			XFLog.out("胜利的玩家："+getNoGiveUpPlayingMap().toString());
+			return null;
 		}
 		return nextRoundUser;
 	}
@@ -126,16 +168,19 @@ public class Desk {
 		this.currentRound = currentRound;
 	}
 	public int getCurTurnUserId() {
-		return curTurnUserId;
-	}
-	public void setCurTurnUserId(int curTurnUserId) {
-		this.curTurnUserId = curTurnUserId;
+		return curTurnUser.getUserId();
 	}
 	public int getCurTurnEndTime() {
 		return curTurnEndTime;
 	}
 	public void setCurTurnEndTime(int curTurnEndTime) {
 		this.curTurnEndTime = curTurnEndTime;
+	}
+	public int getRoundCountDown() {
+		return roundCountDown;
+	}
+	public void setRoundCountDown(int roundCountDown) {
+		this.roundCountDown = roundCountDown;
 	}
 	/////////////////////////位置管理//////////////////////
 	//一桌五个人 ,分：0、1、2、3、4号座位
@@ -158,6 +203,14 @@ public class Desk {
 	public User getUserByPos(int pos) {
 		for(User user : userMap.values()){
 			if (user.getDeskUserData().getPos() == pos) {
+				return user;
+			}
+		}
+		return null;
+	}
+	public User getUserByUserId(int userId){
+		for(User user : userMap.values()){
+			if (user.getDeskUserData().getUserId() == userId) {
 				return user;
 			}
 		}

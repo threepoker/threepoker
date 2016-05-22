@@ -33,7 +33,6 @@ public class MsgManager {
 		return msg;
 	}
 	public void getMsg(String msg,Channel channel) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException, JSONException{
-		System.out.println("getMsg = "+msg);
 		int tag = 0;
 		JSONObject rj = new JSONObject(decode(msg));
 		tag = rj.getInt("tag");
@@ -52,7 +51,6 @@ public class MsgManager {
 	}
 	public void sendMsg(String msg,Channel channel){
 		// 返回应答给客户端
-		System.out.println("sendMsg = "+msg);
 		channel.writeAndFlush(new TextWebSocketFrame(msg));
 	}
 }

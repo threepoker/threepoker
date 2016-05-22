@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <UIProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <ProjectDir>K:\github\threepoker\cocosStudio\poker</ProjectDir>
+  <ProjectDir>F:\github\threepoker\cocosStudio\poker</ProjectDir>
   <Version>1.6.0.0</Version>
-  <Resources>K:\github\threepoker\cocosStudio\poker\Resources</Resources>
+  <Resources>F:\github\threepoker\cocosStudio\poker\Resources</Resources>
   <Name>poker</Name>
   <JsonFileName>poker.json</JsonFileName>
-  <JsonFolder>K:\github\threepoker\cocosStudio\poker\Json</JsonFolder>
+  <JsonFolder>F:\github\threepoker\cocosStudio\poker\Json</JsonFolder>
   <JsonList>
     <string>desk.json</string>
     <string>hall.json</string>
@@ -15,11 +15,11 @@
     <Width>1280</Width>
     <Height>720</Height>
   </CanvasSize>
-  <filePath>K:\github\threepoker\cocosStudio\poker\poker.xml.ui</filePath>
+  <filePath>F:\github\threepoker\cocosStudio\poker\poker.xml.ui</filePath>
   <ProjectType>UIProject</ProjectType>
   <ResRelativePath />
   <imageFileList />
   <imagePngList />
   <JsonSuffix>.json</JsonSuffix>
-  <CurrentUIJson>desk.json</CurrentUIJson>
+  <CurrentUIJson>logo.json</CurrentUIJson>
 </UIProject>

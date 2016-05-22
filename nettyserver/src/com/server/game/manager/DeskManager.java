@@ -23,6 +23,9 @@ public class DeskManager {
 		if (user.getGold()<BaseConfigManager.getInstance().getConfigDeskChip(level).getEnterMin()) {
 			return "金币不足";
 		}
+		if (!isHavePos(level)) {
+			getNewDesk(level);
+		}
 		for (Desk desk : deskList) {
 			if (desk.getLevel()==level && desk.getUserMap().size()<5) {
 				desk.addUser(user);
@@ -42,6 +45,14 @@ public class DeskManager {
 			}
 		}
 		return Const.SUCCESS;
+	}
+	boolean isHavePos(int level){
+		for (Desk desk : deskList) {
+			if (desk.getLevel()==level && desk.getUserMap().size()<5) {
+				return true;
+			}
+		}
+		return false;
 	}
 	private Desk getNewDesk(int level) {
 		Desk desk = new Desk(level);

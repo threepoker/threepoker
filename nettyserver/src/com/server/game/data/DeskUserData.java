@@ -3,6 +3,9 @@ package com.server.game.data;
 
 import java.util.ArrayList;
 
+import com.server.game.classic.Desk;
+import com.server.game.manager.BaseConfigManager;
+
 public class DeskUserData {
 	private int userId;
 	private int putInGold = 0;
@@ -11,18 +14,48 @@ public class DeskUserData {
 	private boolean isPlaying = false;
 	private boolean isBanker = false;
 	private int pos = 0;
+	private Desk desk = null;
 	private ArrayList<Integer> cards;
 	
-	public void reSet(){
+	public void gameBegin(){
 		setPutInGold(0);
 		setSeeCard(false);
 		setGiveUp(false);
 		setPlaying(true);
+	}	
+	public DeskUserData(int userId,Desk desk) {
+		this.userId = userId;
+		this.desk = desk;
+	}
+	public boolean isShowFollowToEnd(){
+		return !isGiveUp;
+	}
+	public boolean isShowGiveUp(){
+		return !isGiveUp;
+	}
+	public boolean isShowCompare(){
+		return (userId==desk.getCurTurnUserId())&&(desk.getCurrentRound()>=5 || desk.getNoGiveUpPlayingMap().size()==2);
+	}
+	public boolean isShowSeeCard() {
+		return (userId==desk.getCurTurnUserId())&&!isSeeCard;
+	}
+	public boolean isShowFollow() {
+		User user = desk.getUserByUserId(userId);
+		int rate = isSeeCard ? 2 : 1;
+		if ((userId==desk.getCurTurnUserId())&& user.getGold() >= 3*rate*desk.getSinglePutIntoGold()) {
+			return true;
+		}
+		return false;
+	}
+	public boolean isShowRise(){
+		User user = desk.getUserByUserId(userId);
+		int rate = isSeeCard ? 2 : 1;
+		if ((userId==desk.getCurTurnUserId())&& user.getGold() >= 3*rate*BaseConfigManager.getInstance().getConfigDeskChip(desk.getLevel()).getMaxChip()) {
+			return true;
+		}
+		return false;
 	}
 	
-	public DeskUserData(int userId) {
-		this.userId = userId;
-	}
 	public int getUserId() {
 		return userId;
 	}
@@ -68,4 +101,8 @@ public class DeskUserData {
 	public void setPos(int pos) {
 		this.pos = pos;
 	}
+	public Desk getDesk() {
+		return desk;
+	}
+
 }

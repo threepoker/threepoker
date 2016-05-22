@@ -8,6 +8,7 @@ import io.netty.channel.Channel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.server.Utils.XFLog;
 import com.server.db.TableUserHandle;
 import com.server.game.data.User;
 import com.server.game.manager.UserManager;
@@ -23,11 +24,12 @@ public class ProtoLogin {
 		return instance;
 	}
 
-	public void loginRes(Channel channel,int status ,String result) throws JSONException{
+	public void loginRes(Channel channel,int status ,String result,int userId) throws JSONException{
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("tag", ProtoTag.PROTOLOGIN.value);
 		jsonObject.put("result", result);
 		jsonObject.put("status", status);
+		jsonObject.put("userId", userId);
 		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
 	}
 	public void loginReq(JSONObject data,Channel channel) throws JSONException, SQLException{
@@ -58,12 +60,12 @@ public class ProtoLogin {
 		if (loginResult) {//登录成功
 			UserManager.getInstance().add(userId, channel);
 			reasionString = "登录成功";
-			this.loginRes(channel, 1, reasionString);
+			this.loginRes(channel, 1, reasionString,userId);
 		}else {
 			reasionString = "登录失败";
-			this.loginRes(channel, 0, reasionString);
+			this.loginRes(channel, 0, reasionString,userId);
 		}
-		System.out.println("loginResult = "+loginResult);
+		XFLog.out("loginResult = "+loginResult+" userId="+userId);
 		
 	}
 	public void getUserInfoRes(JSONObject data,Channel channel) throws JSONException{

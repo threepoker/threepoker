@@ -12,6 +12,22 @@ public class ConfigDeskChip {
 	public ConfigDeskChip() {
 		// TODO Auto-generated constructor stub
 	}
+	public int getMaxChip(){
+		int maxChip = 0;
+		for (int chip : chips) {
+			maxChip = chip > maxChip ? chip : maxChip;
+		}
+		return maxChip;
+	}
+	public int  getMinChip() {
+		int minChip = Integer.MAX_VALUE;
+		for (int chip : chips) {
+			minChip = chip < minChip ? chip : minChip;
+		}
+		return minChip;
+	}
+	
+	
 	public int getLevel() {
 		return level;
 	}

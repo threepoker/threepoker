@@ -7,6 +7,7 @@ import io.netty.channel.Channel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.server.Utils.XFLog;
 import com.server.game.classic.Desk;
 import com.server.game.common.Const;
 import com.server.game.data.BaseConfig;
@@ -113,5 +114,32 @@ public class ProtoDesk {
 		jsonObject.put("tag", ProtoTag.PROTONOTIFYDEALCARD.value);
 		jsonObject.put("bankerId", bankerId);
 		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+	}
+	public void notifyRoundRes(User user){
+		try {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("tag", ProtoTag.PROTONOTIFYROUND.value);
+			jsonObject.put("userId", user.getUserId());
+			jsonObject.put("countDown", user.getDeskUserData().getDesk().getRoundCountDown());
+			jsonObject.put("curRound", user.getDeskUserData().getDesk().getCurrentRound());
+			//跟到底
+			jsonObject.put("operate_0", user.getDeskUserData().isShowFollowToEnd());
+			//弃牌
+			jsonObject.put("operate_1", user.getDeskUserData().isShowGiveUp());
+			//比牌
+			jsonObject.put("operate_2", user.getDeskUserData().isShowCompare());
+			//看牌
+			jsonObject.put("operate_3",user.getDeskUserData().isShowSeeCard());
+			//跟注
+			jsonObject.put("operate_4", user.getDeskUserData().isShowFollow());
+			//加注
+			jsonObject.put("operate_5", user.getDeskUserData().isShowRise());
+			
+			MsgManager.getInstance().sendMsg(jsonObject.toString(),user.getChannel());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			XFLog.out(e.getMessage());
+		}
 	}
 }

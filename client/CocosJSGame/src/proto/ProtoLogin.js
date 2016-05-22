@@ -4,7 +4,8 @@ var ProtoLogin = {
 			NotificationCenter.addObserver(ProtoLogin, ProtoLogin.getUserInfoRes, ProtoTag.GETUSERINFO, null);
 		},
 		loginDevice:function(){
-			ProtoLogin.loginReq("", "", "123456", "前端", 1, "微软", "1.0.1");
+			cc.sys.dump();
+			ProtoLogin.loginReq("", "", cc.sys.os+cc.sys.browserType, "前端", 1, "微软", "1.0.1");
 		},
 		loginReq:function(userName,password,deviceId,nickName,channelId,model,version){
 			var json = {};
