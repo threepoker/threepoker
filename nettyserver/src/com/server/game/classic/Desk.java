@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.json.JSONException;
 
+import com.server.Utils.NotificationCenter;
+import com.server.Utils.NotificationTag;
 import com.server.Utils.XFLog;
 import com.server.game.card.CardUtils;
 import com.server.game.data.BaseConfig;
@@ -11,6 +13,7 @@ import com.server.game.data.DeskUserData;
 import com.server.game.data.User;
 import com.server.game.manager.TimerManager;
 import com.server.game.proto.ProtoDesk;
+import com.server.game.proto.ProtoTag;
 
 public class Desk {
 	private int level;
@@ -39,6 +42,7 @@ public class Desk {
 		user.setDeskUserData(deskUserData);	
 		if (1 == userMap.size()) {
 			setBanker(user);
+			NotificationCenter.getInstance().addObserver(this, "operateCard", NotificationTag.Notif_OperateCard.value, null);
 		}
 		dealCard();
 	}
@@ -47,6 +51,9 @@ public class Desk {
 		userMap.remove(user.getUserId());
 		for (User userIterUser : userMap.values()) {
 			ProtoDesk.getInstance().notifyExitDeskRes(userIterUser.getChannel(),user);
+		}
+		if (0==userMap.size()) {
+			NotificationCenter.getInstance().removeObserverObject(this);
 		}
 	}	
 	

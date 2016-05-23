@@ -16,7 +16,9 @@ public class DeskUserData {
 	private int pos = 0;
 	private Desk desk = null;
 	private ArrayList<Integer> cards;
-	
+	private final int COMPARETURNLIMIT = 1;//至少一轮才能比牌
+	private final int ALLINTURNLIMIT = 5;//至少五轮才能比牌
+	private final int FOLLORATEWLIMIT = 3;//
 	public void gameBegin(){
 		setPutInGold(0);
 		setSeeCard(false);
@@ -28,21 +30,26 @@ public class DeskUserData {
 		this.desk = desk;
 	}
 	public boolean isShowFollowToEnd(){
-		return !isGiveUp;
+		User user = desk.getUserByUserId(userId);
+		int rate = isSeeCard ? 2 : 1;
+		if (user.getGold() >= FOLLORATEWLIMIT*rate*desk.getSinglePutIntoGold()) {
+			return true;
+		}
+		return false;
 	}
 	public boolean isShowGiveUp(){
 		return !isGiveUp;
 	}
 	public boolean isShowCompare(){
-		return (userId==desk.getCurTurnUserId())&&(desk.getCurrentRound()>=5 || desk.getNoGiveUpPlayingMap().size()==2);
+		return (userId==desk.getCurTurnUserId())&&(desk.getCurrentRound()>COMPARETURNLIMIT);
 	}
 	public boolean isShowSeeCard() {
-		return (userId==desk.getCurTurnUserId())&&!isSeeCard;
+		return !isSeeCard;
 	}
 	public boolean isShowFollow() {
 		User user = desk.getUserByUserId(userId);
 		int rate = isSeeCard ? 2 : 1;
-		if ((userId==desk.getCurTurnUserId())&& user.getGold() >= 3*rate*desk.getSinglePutIntoGold()) {
+		if ((userId==desk.getCurTurnUserId())&& user.getGold() >= FOLLORATEWLIMIT*rate*desk.getSinglePutIntoGold()) {
 			return true;
 		}
 		return false;
@@ -50,11 +57,20 @@ public class DeskUserData {
 	public boolean isShowRise(){
 		User user = desk.getUserByUserId(userId);
 		int rate = isSeeCard ? 2 : 1;
-		if ((userId==desk.getCurTurnUserId())&& user.getGold() >= 3*rate*BaseConfigManager.getInstance().getConfigDeskChip(desk.getLevel()).getMaxChip()) {
+		if ((userId==desk.getCurTurnUserId())
+				&& user.getGold() >= FOLLORATEWLIMIT*rate*BaseConfigManager.getInstance().getConfigDeskChip(desk.getLevel()).getMaxChip()
+				&& desk.getSinglePutIntoGold() != BaseConfigManager.getInstance().getConfigDeskChip(desk.getLevel()).getMaxChip()) {
 			return true;
 		}
 		return false;
 	}
+	public boolean isShowAllIn(){
+		if (desk.getCurrentRound() > ALLINTURNLIMIT) {
+			return true;
+		}
+		return false;
+	}
+	
 	
 	public int getUserId() {
 		return userId;

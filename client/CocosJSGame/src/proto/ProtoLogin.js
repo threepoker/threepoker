@@ -31,7 +31,7 @@ var ProtoLogin = {
 		getUserInfoReq:function(){
 			var json = {};
 			json.tag = ProtoTag.GETUSERINFO;
-			json.userId = "";
+			json.userId = User.userId;
 			NetWork.sendMSG(JSON.stringify(json));
 		},
 		getUserInfoRes:function(){

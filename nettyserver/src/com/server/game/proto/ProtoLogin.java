@@ -8,6 +8,7 @@ import io.netty.channel.Channel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.server.Utils.NotificationCenter;
 import com.server.Utils.XFLog;
 import com.server.db.TableUserHandle;
 import com.server.game.data.User;
@@ -20,6 +21,7 @@ public class ProtoLogin {
 	public static ProtoLogin getInstance() {
 		if (null == instance) {
 			instance = new ProtoLogin();
+			NotificationCenter.getInstance().addObserver(instance, "getUserInfoReq", ProtoTag.PROTOGETUSERINFO.value, null);
 		}
 		return instance;
 	}
@@ -68,9 +70,9 @@ public class ProtoLogin {
 		XFLog.out("loginResult = "+loginResult+" userId="+userId);
 		
 	}
-	public void getUserInfoRes(JSONObject data,Channel channel) throws JSONException{
+	public void getUserInfoRes(JSONObject data) throws JSONException{
 		JSONObject jsonRes = new JSONObject();
-		User user = UserManager.getInstance().getUser(channel);
+		User user = UserManager.getInstance().getUser(data.getInt("userId"));
 		if (null != user) {
 			jsonRes.put("status", 1);
 			jsonRes.put("gold", user.getGold());
@@ -80,10 +82,11 @@ public class ProtoLogin {
 			jsonRes.put("result", "获取用户数据失败");
 		}
 		jsonRes.put("tag", ProtoTag.PROTOGETUSERINFO.value);
-		MsgManager.getInstance().sendMsg(jsonRes.toString(),channel);
+		MsgManager.getInstance().sendMsg(jsonRes.toString(),user.getChannel());
 	}
-	public void getUserInfoReq(JSONObject data,Channel channel) throws JSONException{
-		getUserInfoRes(data,channel);
+	public void getUserInfoReq(Object object) throws JSONException{
+		JSONObject josnObject = (JSONObject)(object);
+		getUserInfoRes(josnObject);
 	}
 	
 	private boolean isLoginSuccess(ResultSet resultSet,JSONObject data) throws JSONException, SQLException {
@@ -99,4 +102,6 @@ public class ProtoLogin {
 		}
 		return loginResult;
 	}
+	
+	
 }

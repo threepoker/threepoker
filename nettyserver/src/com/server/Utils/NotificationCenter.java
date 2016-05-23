@@ -14,12 +14,12 @@ public class NotificationCenter {
 	class MyEvent{
 		public Object target = null;
 		public String methordName = "";
-		public String notificationName = "";
+		public int notificationTag = 0;
 		public Object sender = null;
-		public MyEvent(Object target,String methordName,String notificationName,Object sender) {
+		public MyEvent(Object target,String methordName,int notificationTag,Object sender) {
 			this.target = target;
 			this.methordName = methordName;
-			this.notificationName = notificationName;
+			this.notificationTag = notificationTag;
 			this.sender = sender;
 		}
 	}
@@ -29,37 +29,57 @@ public class NotificationCenter {
 		}
 		return instance;
 	}
-	public void addObserver(Object target,String methordName,String notificationName,Object sender){
-		if (null==notificationName || notificationName.length()==0 || null==methordName || methordName.length()==0) {
+	public void addObserver(Object target,String methordName,int notificationTag,Object sender){
+		if (null==methordName || methordName.length()==0) {
 			return;
 		}
-		MyEvent myEvent = new MyEvent(target,methordName,notificationName,sender);
+		removeObserverFunction(target, methordName);
+		MyEvent myEvent = new MyEvent(target,methordName,notificationTag,sender);
 		arrayList.add(myEvent);
 	}
-	public void postNotification(String notificationName,Object object) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
-		Iterator<MyEvent> it = arrayList.iterator();
+	public void postNotification(int notificationTag,Object object) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+		ArrayList<MyEvent> iterArrayList = new ArrayList<MyEvent>(arrayList);
+		Iterator<MyEvent> it = iterArrayList.iterator();
 	    while(it.hasNext()){
 			MyEvent event = it.next();  
-			
-			try {
-				Method method = event.target.getClass().getDeclaredMethod(event.methordName,Object.class);
-				if (null != object) {
-					method.invoke(event.target, object);					
-				}else {
-					method.invoke(event.target, event.sender);
-				}
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
+			if (notificationTag==event.notificationTag) {
+				try {
+					Method method = event.target.getClass().getDeclaredMethod(event.methordName,Object.class);
+					if (null != object) {
+						method.invoke(event.target, object);					
+					}else {
+						method.invoke(event.target, event.sender);
+					}
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				}				
 			}
 	    }
 	}
-	public void removeObserver(String notificationName){
+	public void removeObserverTag(int notificationTag){
 		for (int i = 0; i < arrayList.size(); i++) {
 			MyEvent myEvent = arrayList.get(i);
-			if (notificationName == myEvent.notificationName) {
+			if (notificationTag == myEvent.notificationTag) {
 				arrayList.remove(i--);
+			}
+		}
+	}
+	public void removeObserverObject(Object object){
+		for (int i = 0; i < arrayList.size(); i++) {
+			MyEvent myEvent = arrayList.get(i);
+			if (object == myEvent.target) {
+				arrayList.remove(i--);
+			}
+		}
+	}
+	public void removeObserverFunction(Object object,String methordName){
+		for (int i = 0; i < arrayList.size(); i++) {
+			MyEvent myEvent = arrayList.get(i);
+			if (object == myEvent.target && methordName==myEvent.methordName) {
+				arrayList.remove(i);
+				break;
 			}
 		}
 	}

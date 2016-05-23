@@ -7,6 +7,7 @@ import io.netty.channel.Channel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.server.Utils.NotificationCenter;
 import com.server.Utils.XFLog;
 import com.server.game.classic.Desk;
 import com.server.game.common.Const;
@@ -22,12 +23,17 @@ public class ProtoDesk {
 	public static ProtoDesk getInstance() {
 		if (null == instance) {
 			instance = new ProtoDesk();
+			NotificationCenter.getInstance().addObserver(instance, "enterDeskReq", ProtoTag.PROTOENTERDESK.value, null);
+			NotificationCenter.getInstance().addObserver(instance, "exitDeskReq", ProtoTag.PROTOEXITDESK.value, null);
+			NotificationCenter.getInstance().addObserver(instance, "getDeskInfoReq", ProtoTag.PROTOGETDESKINFO.value, null);
+			NotificationCenter.getInstance().addObserver(instance, "operateCardReq", ProtoTag.PROTOOPERATECARD.value, null);
 		}
 		return instance;
 	}
-	public void enterDeskReq(JSONObject data,Channel channel) throws JSONException{
-		User user = UserManager.getInstance().getUser(channel);
-		enterDeskRes(channel, DeskManager.getInstance().enterDesk(user, data.getInt("level")));
+	public void enterDeskReq(Object object) throws JSONException{
+		JSONObject jsonObject = (JSONObject)(object);
+		User user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
+		enterDeskRes(user.getChannel(), DeskManager.getInstance().enterDesk(user, jsonObject.getInt("level")));
 	}
 	public void enterDeskRes(Channel channel,String res) throws JSONException{
 		JSONObject jsonObject = new JSONObject();
@@ -50,9 +56,10 @@ public class ProtoDesk {
 		jsonObject.put("head", user.getHead());
 		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
 	}
-	public void exitDeskReq(JSONObject data,Channel channel) throws JSONException{
-		User user = UserManager.getInstance().getUser(channel);
-		exitDeskRes(channel, DeskManager.getInstance().exitDesk(user));
+	public void exitDeskReq(Object object) throws JSONException{
+		JSONObject jsonObject = (JSONObject)(object);
+		User user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
+		exitDeskRes(user.getChannel(), DeskManager.getInstance().exitDesk(user));
 	}
 	public void exitDeskRes(Channel channel,String res) throws JSONException{
 		JSONObject jsonObject = new JSONObject();
@@ -72,18 +79,19 @@ public class ProtoDesk {
 		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
 	}
 	
-	public void getDeskInfoReq(JSONObject data,Channel channel) throws JSONException{
-		getDeskInfoRes(channel);
+	public void getDeskInfoReq(Object object) throws JSONException{
+		JSONObject jsonObject = (JSONObject)(object);
+		User user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
+		getDeskInfoRes(user);
 	}
-	public void getDeskInfoRes(Channel channel) throws JSONException{
+	public void getDeskInfoRes(User user) throws JSONException{
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("tag", ProtoTag.PROTOGETDESKINFO.value);
-		User user = UserManager.getInstance().getUser(channel);
 		Desk desk = DeskManager.getInstance().getDesk(user.getUserId());
 		if (null == desk) {
 			jsonObject.put("status", 0);
 			jsonObject.put("result", "进入牌桌失败");
-			MsgManager.getInstance().sendMsg(jsonObject.toString(), channel);
+			MsgManager.getInstance().sendMsg(jsonObject.toString(), user.getChannel());
 			return;
 		}
 		int userNum = desk.getUserMap().size();
@@ -141,5 +149,13 @@ public class ProtoDesk {
 			e.printStackTrace();
 			XFLog.out(e.getMessage());
 		}
+	}
+	
+	public void operateCardReq(Object object) {
+		JSONObject jsonObject = (JSONObject)(object);
+		
+	}
+	public void operateCardRes(Channel channel) {
+		
 	}
 }

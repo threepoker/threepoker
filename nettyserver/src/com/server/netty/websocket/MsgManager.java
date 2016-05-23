@@ -1,12 +1,9 @@
 package com.server.netty.websocket;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.util.CharsetUtil;
 
+
+import com.server.Utils.NotificationCenter;
 import com.server.game.proto.ProtoTag;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,8 +11,6 @@ import java.sql.SQLException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.server.game.proto.ProtoDesk;
 import com.server.game.proto.ProtoLogin;
 
 public class MsgManager {
@@ -40,12 +35,8 @@ public class MsgManager {
 		case PROTOLOGIN:
 			ProtoLogin.getInstance().loginReq(rj,channel);	
 			break;
-		case PROTOGETUSERINFO:
-			ProtoLogin.getInstance().getUserInfoReq(rj,channel);	
-			break;
-		case PROTOENTERDESK:
-			ProtoDesk.getInstance().enterDeskReq(rj,channel);
 		default:
+			NotificationCenter.getInstance().postNotification(tag, rj);			
 			break;
 		}
 	}

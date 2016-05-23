@@ -24,7 +24,10 @@ public class NettyServer {
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workGroup = new NioEventLoopGroup();
 		
-		try {			
+		try {
+			//load observer
+			ProtoLogin.getInstance();
+			ProtoDesk.getInstance();
 			//load base config
 			BaseConfigManager.getInstance().loadAllConfig();
 			
