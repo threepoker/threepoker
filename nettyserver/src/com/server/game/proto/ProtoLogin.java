@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import com.server.Utils.NotificationCenter;
 import com.server.Utils.XFLog;
+import com.server.Utils.XFStack;
 import com.server.db.TableUserHandle;
 import com.server.game.data.User;
 import com.server.game.manager.UserManager;
@@ -26,81 +27,101 @@ public class ProtoLogin {
 		return instance;
 	}
 
-	public void loginRes(Channel channel,int status ,String result,int userId) throws JSONException{
+	public void loginRes(Channel channel,int status ,String result,int userId) {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("tag", ProtoTag.PROTOLOGIN.value);
-		jsonObject.put("result", result);
-		jsonObject.put("status", status);
-		jsonObject.put("userId", userId);
-		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+		try {
+			jsonObject.put("tag", ProtoTag.PROTOLOGIN.value);
+			jsonObject.put("result", result);
+			jsonObject.put("status", status);
+			jsonObject.put("userId", userId);
+			MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+		} catch (JSONException e) {
+			XFStack.logStack(e);
+		}
 	}
-	public void loginReq(JSONObject data,Channel channel) throws JSONException, SQLException{
-		String userNameString = data.getString("userName");
-		String deviceIdString = data.getString("deviceId");
-		int userId = 0;
-		boolean loginResult = false;
-		ResultSet resultSet = null;
-		String reasionString = "";
-		if (userNameString.length()>0) {
-			resultSet = TableUserHandle.getInstance().selectUser("userName", userNameString);
-			if (null!=resultSet && resultSet.next()) {
-				loginResult = isLoginSuccess(resultSet, data);
-				userId = resultSet.getInt(resultSet.findColumn("userId"));
+	public void loginReq(JSONObject data,Channel channel) {
+		String userNameString;
+		try {
+			userNameString = data.getString("userName");
+			String deviceIdString = data.getString("deviceId");
+			int userId = 0;
+			boolean loginResult = false;
+			ResultSet resultSet = null;
+			String reasionString = "";
+			if (userNameString.length()>0) {
+				resultSet = TableUserHandle.getInstance().selectUser("userName", userNameString);
+				if (null!=resultSet && resultSet.next()) {
+					loginResult = isLoginSuccess(resultSet, data);
+					userId = resultSet.getInt(resultSet.findColumn("userId"));
+				}else{
+					reasionString = "用户名或者密码错误";
+				}
 			}else{
-				reasionString = "用户名或者密码错误";
+				resultSet = TableUserHandle.getInstance().selectUser("deviceId", deviceIdString);
+				if (null!=resultSet && resultSet.next()) {
+					userId = resultSet.getInt(resultSet.findColumn("userId"));
+				}else{
+					userId = TableUserHandle.getInstance().insertUser(userNameString, data.getString("password"), data.getString("deviceId"), data.getString("nickName"),
+							data.getInt("channelId"), data.getString("model"), data.getString("version"), false);
+				}		
+				loginResult = true;
 			}
-		}else{
-			resultSet = TableUserHandle.getInstance().selectUser("deviceId", deviceIdString);
-			if (null!=resultSet && resultSet.next()) {
-				userId = resultSet.getInt(resultSet.findColumn("userId"));
-			}else{
-				userId = TableUserHandle.getInstance().insertUser(userNameString, data.getString("password"), data.getString("deviceId"), data.getString("nickName"),
-						data.getInt("channelId"), data.getString("model"), data.getString("version"), false);
-			}		
-			loginResult = true;
+			if (loginResult) {//登录成功
+				UserManager.getInstance().add(userId, channel);
+				reasionString = "登录成功";
+				this.loginRes(channel, 1, reasionString,userId);
+			}else {
+				reasionString = "登录失败";
+				this.loginRes(channel, 0, reasionString,userId);
+			}
+			XFLog.out().println("loginResult = "+loginResult+" userId="+userId);
+		} catch (Exception e) {
+			XFStack.logStack(e);
 		}
-		if (loginResult) {//登录成功
-			UserManager.getInstance().add(userId, channel);
-			reasionString = "登录成功";
-			this.loginRes(channel, 1, reasionString,userId);
-		}else {
-			reasionString = "登录失败";
-			this.loginRes(channel, 0, reasionString,userId);
-		}
-		XFLog.out("loginResult = "+loginResult+" userId="+userId);
 		
 	}
-	public void getUserInfoRes(JSONObject data) throws JSONException{
+	public void getUserInfoRes(JSONObject data) {
 		JSONObject jsonRes = new JSONObject();
-		User user = UserManager.getInstance().getUser(data.getInt("userId"));
-		if (null != user) {
-			jsonRes.put("status", 1);
-			jsonRes.put("gold", user.getGold());
-			jsonRes.put("diamond", user.getDiamond());
-		}else{
-			jsonRes.put("status", 0);
-			jsonRes.put("result", "获取用户数据失败");
+		User user;
+		try {
+			user = UserManager.getInstance().getUser(data.getInt("userId"));
+			if (null != user) {
+				jsonRes.put("status", 1);
+				jsonRes.put("gold", user.getGold());
+				jsonRes.put("diamond", user.getDiamond());
+			}else{
+				jsonRes.put("status", 0);
+				jsonRes.put("result", "获取用户数据失败");
+			}
+			jsonRes.put("tag", ProtoTag.PROTOGETUSERINFO.value);
+			MsgManager.getInstance().sendMsg(jsonRes.toString(),user.getChannel());
+		} catch (JSONException e) {
+			XFStack.logStack(e);
 		}
-		jsonRes.put("tag", ProtoTag.PROTOGETUSERINFO.value);
-		MsgManager.getInstance().sendMsg(jsonRes.toString(),user.getChannel());
 	}
-	public void getUserInfoReq(Object object) throws JSONException{
+	public void getUserInfoReq(Object object){
 		JSONObject josnObject = (JSONObject)(object);
 		getUserInfoRes(josnObject);
 	}
 	
-	private boolean isLoginSuccess(ResultSet resultSet,JSONObject data) throws JSONException, SQLException {
-		String userName = data.getString("userName");
-		String password= data.getString("password");
-		boolean loginResult = false;
-		if (userName.length()>0) {
-			if(resultSet.getString(resultSet.findColumn("password")) == password){
-				loginResult = true;
-			}else {
-				loginResult = false;
-			}	
+	private boolean isLoginSuccess(ResultSet resultSet,JSONObject data)  {
+		String userName;
+		try {
+			userName = data.getString("userName");
+			String password= data.getString("password");
+			boolean loginResult = false;
+			if (userName.length()>0) {
+				if(resultSet.getString(resultSet.findColumn("password")) == password){
+					loginResult = true;
+				}else {
+					loginResult = false;
+				}	
+			}
+			return loginResult;
+		} catch (Exception e) {
+			XFStack.logStack(e);
 		}
-		return loginResult;
+		return false;
 	}
 	
 	

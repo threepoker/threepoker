@@ -1,6 +1,10 @@
 package com.server.netty.websocket;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.server.Utils.XFLog;
 import com.server.game.manager.BaseConfigManager;
 import com.server.game.proto.ProtoDesk;
 import com.server.game.proto.ProtoLogin;
@@ -22,9 +26,8 @@ public class NettyServer {
 	public void run(){
 		
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
-		EventLoopGroup workGroup = new NioEventLoopGroup();
-		
-		try {
+		EventLoopGroup workGroup = new NioEventLoopGroup();		
+		try {			
 			//load observer
 			ProtoLogin.getInstance();
 			ProtoDesk.getInstance();

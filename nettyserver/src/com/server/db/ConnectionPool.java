@@ -11,6 +11,9 @@ import java.util.Vector;
 
 import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.Statement;
+import com.server.Utils.XFException;
+import com.server.Utils.XFLog;
+import com.server.Utils.XFStack;
 public class ConnectionPool {
 	
 	private String jdbcDriver = ""; // 数据库驱动
@@ -198,7 +201,7 @@ public class ConnectionPool {
 	 * initialConnections 中设置的值
 	 */
 
-	public synchronized void createPool() throws Exception {
+	public synchronized void createPool() {
 
 		// 确保连接池没有创建
 
@@ -210,11 +213,17 @@ public class ConnectionPool {
 
 		}
 
-		// 实例化 JDBC Driver 中指定的驱动类实例
 
-		Driver driver = (Driver) (Class.forName(this.jdbcDriver).newInstance());
+		try {
+			// 实例化 JDBC Driver 中指定的驱动类实例
 
-		DriverManager.registerDriver(driver); // 注册 JDBC 驱动程序
+			Driver driver = (Driver) (Class.forName(this.jdbcDriver).newInstance());
+			DriverManager.registerDriver(driver);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			XFStack.logStack(e);
+			e.printStackTrace();
+		} // 注册 JDBC 驱动程序
 
 		// 创建保存连接的向量 , 初始时有 0 个元素
 
@@ -239,7 +248,7 @@ public class ConnectionPool {
 	 * @param numConnections
 	 *            要创建的数据库连接的数目
 	 */
-	private void createConnections(int numConnections) throws SQLException {
+	private void createConnections(int numConnections) {
 
 		// 循环创建指定数目的数据库连接
 
@@ -266,10 +275,8 @@ public class ConnectionPool {
 				connections.addElement(new PooledConnection(newConnection()));
 
 			} catch (SQLException e) {
-
+				XFException.logException(e);
 				System.out.println(" 创建数据库连接失败！ " + e.getMessage());
-
-				throw new SQLException();
 
 			}
 
@@ -341,7 +348,7 @@ public class ConnectionPool {
 	 * @return 返回一个可用的数据库连接对象
 	 */
 
-	public synchronized PooledConnection getConnection() throws SQLException {
+	public synchronized PooledConnection getConnection(){
 
 		// 确保连接池己被创建
 
@@ -351,7 +358,8 @@ public class ConnectionPool {
 
 		}
 
-		PooledConnection conn = getFreeConnection(); // 获得一个可用的数据库连接
+		PooledConnection conn = null;
+		conn = getFreeConnection();// 获得一个可用的数据库连接
 
 		// 如果目前没有可以使用的连接，即所有的连接都在使用中
 
@@ -367,7 +375,7 @@ public class ConnectionPool {
 
 			// 则表明创建一批连接后也不可获得可用连接
 
-		}
+		} 
 		
 		return conn;// 返回获得的可用的连接
 
@@ -393,12 +401,12 @@ public class ConnectionPool {
 		}
 	}
 
-	private PooledConnection getFreeConnection() throws SQLException {
+	private PooledConnection getFreeConnection() {
 
 		// 从连接池中获得一个可用的数据库连接
 
-		PooledConnection conn = findFreeConnection();
-
+		PooledConnection conn = null;
+		conn = findFreeConnection();
 		if (conn == null) {
 
 			// 如果目前连接池中没有可用的连接
@@ -415,6 +423,7 @@ public class ConnectionPool {
 
 		}
 
+
 		return conn;
 
 	}
@@ -430,7 +439,7 @@ public class ConnectionPool {
 	 * @return 返回一个可用的数据库连接
 	 */
 
-	private PooledConnection findFreeConnection() throws SQLException {
+	private PooledConnection findFreeConnection() {
 
 		
 		// 获得连接池向量中所有的对象
@@ -743,12 +752,24 @@ public class ConnectionPool {
 
 		}
 
-		public ResultSet executeQuery(String sql) throws SQLException {
-			return connection.createStatement().executeQuery(sql);
+		public ResultSet executeQuery(String sql) {
+			try {
+				return connection.createStatement().executeQuery(sql);
+			} catch (SQLException e) {
+				XFStack.logStack(e);
+				e.printStackTrace();
+			}
+			return null;
 		}
 		
-		public int executeUpdate(String sql) throws SQLException {
-			return connection.createStatement().executeUpdate(sql);
+		public int executeUpdate(String sql) {
+			try {
+				return connection.createStatement().executeUpdate(sql);
+			} catch (SQLException e) {
+				XFStack.logStack(e);
+				e.printStackTrace();
+			}
+			return 0;
 		}
 
 		// 返回此对象中的连接
@@ -757,8 +778,14 @@ public class ConnectionPool {
 			return connection;
 		}
 		//返回片断
-		public PreparedStatement prepareStatement(String sql) throws SQLException{
-			return (PreparedStatement) connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+		public PreparedStatement prepareStatement(String sql){
+			try {
+				return (PreparedStatement) connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+			} catch (SQLException e) {
+				XFStack.logStack(e);
+				e.printStackTrace();
+			}
+			return null;
 		}
 
 		// 设置此对象的，连接

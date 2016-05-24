@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import com.server.Utils.NotificationCenter;
 import com.server.Utils.XFLog;
+import com.server.Utils.XFStack;
 import com.server.game.classic.Desk;
 import com.server.game.common.Const;
 import com.server.game.data.BaseConfig;
@@ -30,98 +31,138 @@ public class ProtoDesk {
 		}
 		return instance;
 	}
-	public void enterDeskReq(Object object) throws JSONException{
+	public void enterDeskReq(Object object) {
 		JSONObject jsonObject = (JSONObject)(object);
-		User user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
-		enterDeskRes(user.getChannel(), DeskManager.getInstance().enterDesk(user, jsonObject.getInt("level")));
-	}
-	public void enterDeskRes(Channel channel,String res) throws JSONException{
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("tag", ProtoTag.PROTOENTERDESK.value);
-		if (Const.SUCCESS == res) {
-			jsonObject.put("status", 1);
-		}else {
-			jsonObject.put("status", 0);
-			jsonObject.put("result", res);
+		User user;
+		try {
+			user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
+			enterDeskRes(user.getChannel(), DeskManager.getInstance().enterDesk(user, jsonObject.getInt("level")));
+		} catch (JSONException e) {
+			XFStack.logStack(e);
 		}
-		MsgManager.getInstance().sendMsg(jsonObject.toString(), channel);
 	}
-	public void notifyEnterDeskRes(Channel channel,User user) throws JSONException {
+	public void enterDeskRes(Channel channel,String res) {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("tag", ProtoTag.PROTONOTIFYENTERDESK.value);
-		jsonObject.put("userId", user.getUserId());
-		jsonObject.put("nickName",user.getUserName());
-		jsonObject.put("gold", user.getGold());
-		jsonObject.put("pos", user.getDeskUserData().getPos());
-		jsonObject.put("head", user.getHead());
-		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+		try {
+			jsonObject.put("tag", ProtoTag.PROTOENTERDESK.value);
+			if (Const.SUCCESS == res) {
+				jsonObject.put("status", 1);
+			}else {
+				jsonObject.put("status", 0);
+				jsonObject.put("result", res);
+			}
+			MsgManager.getInstance().sendMsg(jsonObject.toString(), channel);
+		} catch (JSONException e) {
+			XFStack.logStack(e);
+		}
 	}
-	public void exitDeskReq(Object object) throws JSONException{
+	public void notifyEnterDeskRes(Channel channel,User user)  {
+		JSONObject jsonObject = new JSONObject();
+		try {
+			jsonObject.put("tag", ProtoTag.PROTONOTIFYENTERDESK.value);
+			jsonObject.put("userId", user.getUserId());
+			jsonObject.put("nickName",user.getUserName());
+			jsonObject.put("gold", user.getGold());
+			jsonObject.put("pos", user.getDeskUserData().getPos());
+			jsonObject.put("head", user.getHead());
+			MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+		} catch (JSONException e) {
+			XFStack.logStack(e);
+		}
+	}
+	public void exitDeskReq(Object object) {
 		JSONObject jsonObject = (JSONObject)(object);
-		User user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
-		exitDeskRes(user.getChannel(), DeskManager.getInstance().exitDesk(user));
-	}
-	public void exitDeskRes(Channel channel,String res) throws JSONException{
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("tag", ProtoTag.PROTOEXITDESK.value);
-		if (Const.SUCCESS == res) {
-			jsonObject.put("status", 1);
-		}else {
-			jsonObject.put("status", 0);
-			jsonObject.put("result", res);
+		User user;
+		try {
+			user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
+			exitDeskRes(user.getChannel(), DeskManager.getInstance().exitDesk(user));
+		} catch (JSONException e) {
+			XFStack.logStack(e);
 		}
-		MsgManager.getInstance().sendMsg(jsonObject.toString(), channel);
 	}
-	public void notifyExitDeskRes(Channel channel,User user) throws JSONException{
+	public void exitDeskRes(Channel channel,String res) {
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("tag", ProtoTag.PROTONOTIFYEXITDESK.value);
-		jsonObject.put("userId", user.getUserId());
-		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+		try {
+			jsonObject.put("tag", ProtoTag.PROTOEXITDESK.value);
+			if (Const.SUCCESS == res) {
+				jsonObject.put("status", 1);
+			}else {
+				jsonObject.put("status", 0);
+				jsonObject.put("result", res);
+			}
+			MsgManager.getInstance().sendMsg(jsonObject.toString(), channel);
+		} catch (JSONException e) {
+			XFStack.logStack(e);
+		}
+	}
+	public void notifyExitDeskRes(Channel channel,User user) {
+		JSONObject jsonObject = new JSONObject();
+		try {
+			jsonObject.put("tag", ProtoTag.PROTONOTIFYEXITDESK.value);
+			jsonObject.put("userId", user.getUserId());
+			MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+		} catch (JSONException e) {
+			XFStack.logStack(e);
+		}
 	}
 	
-	public void getDeskInfoReq(Object object) throws JSONException{
+	public void getDeskInfoReq(Object object) {
 		JSONObject jsonObject = (JSONObject)(object);
-		User user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
-		getDeskInfoRes(user);
-	}
-	public void getDeskInfoRes(User user) throws JSONException{
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("tag", ProtoTag.PROTOGETDESKINFO.value);
-		Desk desk = DeskManager.getInstance().getDesk(user.getUserId());
-		if (null == desk) {
-			jsonObject.put("status", 0);
-			jsonObject.put("result", "进入牌桌失败");
-			MsgManager.getInstance().sendMsg(jsonObject.toString(), user.getChannel());
-			return;
+		User user;
+		try {
+			user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
+			getDeskInfoRes(user);
+		} catch (JSONException e) {
+			XFStack.logStack(e);
 		}
-		int userNum = desk.getUserMap().size();
-		jsonObject.put("playerNum", userNum);
-		jsonObject.put("status", 0);
-		int index = 0;
-		for (User userIterUser : desk.getUserMap().values()) {
-			jsonObject.put(index+"_userId", userIterUser.getUserId());
-			jsonObject.put(index+"_userGold", userIterUser.getGold());
-			DeskUserData deskUserData = desk.getDeskUserData(userIterUser.getUserId());
-			if (null != deskUserData) {
-				jsonObject.put(index+"_userPutInGold", deskUserData.getPutInGold());
-				jsonObject.put(index+"_userIsPlaying", deskUserData.isPlaying());
-				jsonObject.put(index+"_userIsSeeCard", deskUserData.isSeeCard());
-				jsonObject.put(index+"_userIsGiveUp", deskUserData.isGiveUp());
+	}
+	public void getDeskInfoRes(User user) {
+
+		JSONObject jsonObject = new JSONObject();
+		try {
+			jsonObject.put("tag", ProtoTag.PROTOGETDESKINFO.value);
+			Desk desk = DeskManager.getInstance().getDesk(user.getUserId());
+			if (null == desk) {
+				jsonObject.put("status", 0);
+				jsonObject.put("result", "进入牌桌失败");
+				MsgManager.getInstance().sendMsg(jsonObject.toString(), user.getChannel());
+				return;
 			}
-			jsonObject.put(index+"_userPos", userIterUser.getDeskUserData().getPos());
+			int userNum = desk.getUserMap().size();
+			jsonObject.put("playerNum", userNum);
+			jsonObject.put("status", 0);
+			int index = 0;
+			for (User userIterUser : desk.getUserMap().values()) {
+				jsonObject.put(index+"_userId", userIterUser.getUserId());
+				jsonObject.put(index+"_userGold", userIterUser.getGold());
+				DeskUserData deskUserData = desk.getDeskUserData(userIterUser.getUserId());
+				if (null != deskUserData) {
+					jsonObject.put(index+"_userPutInGold", deskUserData.getPutInGold());
+					jsonObject.put(index+"_userIsPlaying", deskUserData.isPlaying());
+					jsonObject.put(index+"_userIsSeeCard", deskUserData.isSeeCard());
+					jsonObject.put(index+"_userIsGiveUp", deskUserData.isGiveUp());
+				}
+				jsonObject.put(index+"_userPos", userIterUser.getDeskUserData().getPos());
+			}
+			jsonObject.put("putIntoTotalGold", desk.getPutIntoTotalGold());
+			jsonObject.put("singlePutIntoGold", desk.getSinglePutIntoGold());
+			jsonObject.put("currentRound", desk.getCurrentRound());
+			jsonObject.put("maxRound", BaseConfig.getInstance().MAXROUND);
+			jsonObject.put("curTurnUserId ", desk.getCurrentRound());
+			jsonObject.put("curTurnEndTime  ", desk.getCurTurnEndTime());
+		} catch (JSONException e) {
+			XFStack.logStack(e);
 		}
-		jsonObject.put("putIntoTotalGold", desk.getPutIntoTotalGold());
-		jsonObject.put("singlePutIntoGold", desk.getSinglePutIntoGold());
-		jsonObject.put("currentRound", desk.getCurrentRound());
-		jsonObject.put("maxRound", BaseConfig.getInstance().MAXROUND);
-		jsonObject.put("curTurnUserId ", desk.getCurrentRound());
-		jsonObject.put("curTurnEndTime  ", desk.getCurTurnEndTime());
 	}
-	public void notifyDealCardRes(Channel channel,int bankerId) throws JSONException{
+	public void notifyDealCardRes(Channel channel,int bankerId){
 		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("tag", ProtoTag.PROTONOTIFYDEALCARD.value);
-		jsonObject.put("bankerId", bankerId);
-		MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+		try {
+			jsonObject.put("tag", ProtoTag.PROTONOTIFYDEALCARD.value);
+			jsonObject.put("bankerId", bankerId);
+			MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
+		} catch (JSONException e) {
+			XFStack.logStack(e);
+		}
 	}
 	public void notifyRoundRes(User user){
 		try {
@@ -147,7 +188,7 @@ public class ProtoDesk {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			XFLog.out(e.getMessage());
+			XFStack.logStack(e);
 		}
 	}
 	

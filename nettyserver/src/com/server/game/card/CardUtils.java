@@ -31,7 +31,7 @@ public class CardUtils {
 	public ArrayList<Integer> getDLCards(){
 		ArrayList<Integer> cards = new ArrayList<>();
 		if (cards_.size() < 3) {
-			XFLog.out("error error error error error error error error error getDLCards not engouth cards");
+			XFLog.out().println("error error error error error error error error error getDLCards not engouth cards");
 			
 			return cards;
 		}
@@ -68,7 +68,7 @@ public class CardUtils {
 	public ArrayList<Integer> getBZCards(){
 		ArrayList<Integer> cards = new ArrayList<>();
 		if (cards_.size() < 3) {
-			XFLog.out("error error error error error error error error error getBZCards not engouth cards");
+			XFLog.out().println("error error error error error error error error error getBZCards not engouth cards");
 			return cards;
 		}
 		int i = 0;
@@ -99,7 +99,7 @@ public class CardUtils {
 	public ArrayList<Integer> getSJCards(){
 		ArrayList<Integer> cards = new ArrayList<>();
 		if (cards_.size() < 3) {
-			XFLog.out("error error error error error error error error error getSJCards not engouth cards");
+			XFLog.out().println("error error error error error error error error error getSJCards not engouth cards");
 			return cards;
 		}
 		int i = 0;
@@ -139,7 +139,7 @@ public class CardUtils {
 	public ArrayList<Integer> getJHCards(){
 		ArrayList<Integer> sameTypeCards = new ArrayList<>();
 		if (cards_.size() < 3) {
-			XFLog.out("error error error error error error error error error getJHCards not engouth cards");
+			XFLog.out().println("error error error error error error error error error getJHCards not engouth cards");
 			return sameTypeCards;
 		}
 		for (int i = 0; i < cards_.size()-2; i++) {
@@ -171,7 +171,7 @@ public class CardUtils {
 	public ArrayList<Integer> getSZCards(){
 		ArrayList<Integer> cards = new ArrayList<>();
 		if (cards_.size() < 3) {
-			XFLog.out("error error error error error error error error error getSZCards not engouth cards");
+			XFLog.out().println("error error error error error error error error error getSZCards not engouth cards");
 			return cards;
 		}
 		int i = 0;
@@ -210,7 +210,7 @@ public class CardUtils {
 	public ArrayList<Integer> getDZCards(){
 		ArrayList<Integer> cards = new ArrayList<>();
 		if (cards_.size() < 3) {
-			XFLog.out("error error error error error error error error error getDZCards not engouth cards");
+			XFLog.out().println("error error error error error error error error error getDZCards not engouth cards");
 			return cards;
 		}
 		for (int i = 0; i < cards_.size()-2; i++) {
@@ -243,7 +243,7 @@ public class CardUtils {
 	public ArrayList<Integer> getGPCards(){
 		ArrayList<Integer> cards = new ArrayList<>();
 		if (cards_.size() < 3) {
-			XFLog.out("error error error error error error error error error getDZCards not engouth cards");
+			XFLog.out().println("error error error error error error error error error getDZCards not engouth cards");
 			return cards;
 		}
 		for (int i = 0; i < cards_.size()-2; i++) {
@@ -271,7 +271,7 @@ public class CardUtils {
 	/////////////////////################### 判断牌型   #########################////////////////////////////////
 	public boolean isDLCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out("error error error error error error error error error isDLCard cards num is error");
+			XFLog.out().println("error error error error error error error error error isDLCard cards num is error");
 			return false;
 		}
 		ArrayList<Integer> cards = new ArrayList<>();
@@ -296,12 +296,12 @@ public class CardUtils {
 		if (a==b && a==c) {
 			return false;
 		}
-		XFLog.out("card : "+pCard.get(0)+" "+pCard.get(1)+" "+pCard.get(2)+" is dilong");
+		XFLog.out().println("card : "+pCard.get(0)+" "+pCard.get(1)+" "+pCard.get(2)+" is dilong");
 		return true;
 	}
 	public boolean isBZCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out("error error error error error error error error error isBZCard cards num is error");
+			XFLog.out().println("error error error error error error error error error isBZCard cards num is error");
 			return false;
 		}
 		for (int i = 1; i < pCard.size(); i++) {
@@ -313,7 +313,7 @@ public class CardUtils {
 	}
 	public boolean isSJCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out("error error error error error error error error error isSJCard cards num is error");
+			XFLog.out().println("error error error error error error error error error isSJCard cards num is error");
 			return false;
 		}
 		if (!isSameTypeCard(pCard)) {
@@ -343,7 +343,7 @@ public class CardUtils {
 	}
 	public boolean isJHCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out("error error error error error error error error error isJHCard cards num is error");
+			XFLog.out().println("error error error error error error error error error isJHCard cards num is error");
 			return false;
 		}
 		if (isSameTypeCard(pCard) && !isSJCard(pCard) ) {
@@ -353,7 +353,7 @@ public class CardUtils {
 	}
 	public boolean isSZCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out("error error error error error error error error error isSZCard cards num is error");
+			XFLog.out().println("error error error error error error error error error isSZCard cards num is error");
 			return false;
 		}
 		if (isSameTypeCard(pCard)) {
@@ -383,7 +383,7 @@ public class CardUtils {
 	}
 	public boolean isDZCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out("error error error error error error error error error isDZCard cards num is error");
+			XFLog.out().println("error error error error error error error error error isDZCard cards num is error");
 			return false;
 		}
 		int a = (int)(pCard.get(0)&0x0F);
@@ -396,7 +396,7 @@ public class CardUtils {
 	}
 	public boolean isGPCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out("error error error error error error error error error isGPCard cards num is error");
+			XFLog.out().println("error error error error error error error error error isGPCard cards num is error");
 			return false;
 		}
 		if (!isDLCard(pCard) && !isBZCard(pCard) && !isSameTypeCard(pCard) && !isSZCard(pCard) && !isDZCard(pCard)) {
@@ -478,7 +478,7 @@ public class CardUtils {
 //			}
 //		}
 		java.util.Collections.shuffle(cards_);
-		XFLog.out("resetCard:");
+		XFLog.out().println("resetCard:");
 		for (int i = 0; i < 52; i++) {
 			System.out.print(cards_.get(i)+" ");;
 		}
@@ -494,7 +494,7 @@ public class CardUtils {
 	}
 	public CardType getCardsType(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out("error error error error error error error error error getCardsType cards num is error");
+			XFLog.out().println("error error error error error error error error error getCardsType cards num is error");
 			return CardType.UNKNOW;
 		}
 
@@ -502,7 +502,7 @@ public class CardUtils {
 	}
 	public boolean isSameTypeCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out("error error error error error error error error error isSameTypeCard cards num is error");
+			XFLog.out().println("error error error error error error error error error isSameTypeCard cards num is error");
 			return false;
 		}
 		int iType = (int)(byte)(pCard.get(0)&0xF0>>4);

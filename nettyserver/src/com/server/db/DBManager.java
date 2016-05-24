@@ -46,14 +46,7 @@ public class DBManager {
 		if (inst == null)
 			new DBManager();
 
-		try {
-			
-			conn = connectionPool.getConnection();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		conn = connectionPool.getConnection();
 
 		return conn;
 	}

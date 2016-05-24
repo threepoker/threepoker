@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
 
+import com.server.Utils.XFStack;
 import com.server.db.TableCommonHandle;
 import com.server.db.TableConfigDeskChipHandle;
 import com.server.db.TableConfigDeskHandle;
@@ -21,49 +22,61 @@ public class BaseConfigManager {
 		}
 		return instance;
 	}
-	public void loadAllConfig() throws SQLException{
+	public void loadAllConfig(){
 		parseConfigFrag();
 		parseConfigDesk();
 		parseConfigDeckChip();
 	}
 	//////////////////////parseConfig////////////////////////////////////////////
-	private void parseConfigFrag() throws SQLException{
+	private void parseConfigFrag() {
 		ResultSet rSet = TableConfigFragHandle.getInstance().select();
-		if (null!=rSet && rSet.next()) {
-			BaseConfig.getInstance().NEWUSERGOLD = rSet.getInt(rSet.findColumn("newUserGold"));
+		try {
+			if (null!=rSet && rSet.next()) {
+				BaseConfig.getInstance().NEWUSERGOLD = rSet.getInt(rSet.findColumn("newUserGold"));
+			}
+		} catch (SQLException e) {
+			XFStack.logStack(e);
 		}
 	}
-	private void parseConfigDesk() throws SQLException{
+	private void parseConfigDesk() {
 		ResultSet rSet = TableConfigDeskHandle.getInstance().select();
-		if (null!=rSet && rSet.next()) {
-			BaseConfig.getInstance().GLDL = rSet.getFloat(rSet.findColumn("dl"));
-			BaseConfig.getInstance().GLBZ = rSet.getFloat(rSet.findColumn("bz"));
-			BaseConfig.getInstance().GLSJ = rSet.getFloat(rSet.findColumn("sj"));
-			BaseConfig.getInstance().GLJH = rSet.getFloat(rSet.findColumn("jh"));
-			BaseConfig.getInstance().GLSZ = rSet.getFloat(rSet.findColumn("sz"));
-			BaseConfig.getInstance().GLDZ = rSet.getFloat(rSet.findColumn("dz"));
-			BaseConfig.getInstance().GLGP = rSet.getFloat(rSet.findColumn("gp"));
-			BaseConfig.getInstance().MAXROUND = rSet.getInt(rSet.findColumn("maxRound"));
+		try {
+			if (null!=rSet && rSet.next()) {
+				BaseConfig.getInstance().GLDL = rSet.getFloat(rSet.findColumn("dl"));
+				BaseConfig.getInstance().GLBZ = rSet.getFloat(rSet.findColumn("bz"));
+				BaseConfig.getInstance().GLSJ = rSet.getFloat(rSet.findColumn("sj"));
+				BaseConfig.getInstance().GLJH = rSet.getFloat(rSet.findColumn("jh"));
+				BaseConfig.getInstance().GLSZ = rSet.getFloat(rSet.findColumn("sz"));
+				BaseConfig.getInstance().GLDZ = rSet.getFloat(rSet.findColumn("dz"));
+				BaseConfig.getInstance().GLGP = rSet.getFloat(rSet.findColumn("gp"));
+				BaseConfig.getInstance().MAXROUND = rSet.getInt(rSet.findColumn("maxRound"));
+			}
+		} catch (SQLException e) {
+			XFStack.logStack(e);
 		}
 	}
-	private void parseConfigDeckChip() throws SQLException{
+	private void parseConfigDeckChip(){
 		Map<Integer, ConfigDeskChip> configChips = BaseConfig.getInstance().configChips;
 		configChips.clear();
 		ResultSet rSet = TableConfigDeskChipHandle.getInstance().select();
-		while (null!=rSet && rSet.next()) {
-			ConfigDeskChip configDeskChip = new ConfigDeskChip();
-			configDeskChip.setLevel(rSet.getInt(rSet.findColumn("level")));
-			configDeskChip.setName(rSet.getString(rSet.findColumn("name")));
-			configDeskChip.setEnterMin(rSet.getInt(rSet.findColumn("enterMin")));
-			configDeskChip.setEnterMax(rSet.getInt(rSet.findColumn("enterMax")));
-			configDeskChip.setDefaultBet(rSet.getInt(rSet.findColumn("defaultBet")));
-			String chipStrings = rSet.getString(rSet.findColumn("chip"));
-			String[] chipStrigArray=chipStrings.split(",");			
-			for (String chipString : chipStrigArray) {
-				configDeskChip.getChips().add(Integer.parseInt(chipString));
+		try {
+			while (null!=rSet && rSet.next()) {
+				ConfigDeskChip configDeskChip = new ConfigDeskChip();
+				configDeskChip.setLevel(rSet.getInt(rSet.findColumn("level")));
+				configDeskChip.setName(rSet.getString(rSet.findColumn("name")));
+				configDeskChip.setEnterMin(rSet.getInt(rSet.findColumn("enterMin")));
+				configDeskChip.setEnterMax(rSet.getInt(rSet.findColumn("enterMax")));
+				configDeskChip.setDefaultBet(rSet.getInt(rSet.findColumn("defaultBet")));
+				String chipStrings = rSet.getString(rSet.findColumn("chip"));
+				String[] chipStrigArray=chipStrings.split(",");			
+				for (String chipString : chipStrigArray) {
+					configDeskChip.getChips().add(Integer.parseInt(chipString));
+				}
+				configChips.put(configDeskChip.getLevel(), configDeskChip);
 			}
-			configChips.put(configDeskChip.getLevel(), configDeskChip);
-		}
+		} catch (Exception e) {
+			XFStack.logStack(e);
+		} 
 	}
 	
 	

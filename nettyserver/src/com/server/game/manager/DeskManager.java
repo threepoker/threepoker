@@ -16,7 +16,7 @@ public class DeskManager {
 		}
 		return instance;
 	}
-	public String enterDesk(User user,int level) throws JSONException{
+	public String enterDesk(User user,int level) {
 		if(null == BaseConfigManager.getInstance().getConfigDeskChip(level)){
 			return "获取牌桌失败";
 		}
@@ -34,7 +34,7 @@ public class DeskManager {
 		}
 		return Const.SUCCESS;
 	}
-	public String exitDesk(User user) throws JSONException{
+	public String exitDesk(User user) {
 		for (Desk desk : deskList) {
 			if (desk.getUserMap().get(user.getUserId()) != null) {
 				desk.removeUser(user);

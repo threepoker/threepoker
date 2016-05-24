@@ -31,7 +31,7 @@ public class Desk {
 	public Desk(int level) {
 		this.level = level;
 	}
-	public void addUser(User user) throws JSONException{
+	public void addUser(User user){
 		for (User userIterUser : userMap.values()) {
 			ProtoDesk.getInstance().notifyEnterDeskRes(userIterUser.getChannel(),userIterUser);
 		}
@@ -46,7 +46,7 @@ public class Desk {
 		}
 		dealCard();
 	}
-	public void removeUser(User user) throws JSONException{
+	public void removeUser(User user) {
 		user.setDeskUserData(null);
 		userMap.remove(user.getUserId());
 		for (User userIterUser : userMap.values()) {
@@ -83,7 +83,7 @@ public class Desk {
 	/*
 	 * 游戏逻辑
 	 */
-	private void dealCard() throws JSONException{
+	private void dealCard(){
 		if (status || userMap.size()<2) {
 			return;
 		}
@@ -100,7 +100,7 @@ public class Desk {
 	}
 	public void countDown() {
 		setRoundCountDown(getRoundCountDown()-1);
-		XFLog.out("roundCountDown = "+roundCountDown);
+		XFLog.out().println("roundCountDown = "+roundCountDown);
 		if (roundCountDown<=0) {
 			curTurnUser.getDeskUserData().setGiveUp(true);
 			curTurnUser = getNextRoundUser(curTurnUser);
@@ -135,7 +135,7 @@ public class Desk {
 		}
 		//仅剩下一个没弃牌正在游戏中的玩家
 		if (1 == getNoGiveUpPlayingMap().size()) {
-			XFLog.out("胜利的玩家："+getNoGiveUpPlayingMap().toString());
+			XFLog.out().println("胜利的玩家："+getNoGiveUpPlayingMap().toString());
 			return null;
 		}
 		return nextRoundUser;

@@ -43,8 +43,6 @@ public class TableCommonHandle {
 			conn = DBManager.getConnection();
 			rSet = conn.executeQuery(sql);
 			
-		} catch (SQLException e) {
-			e.printStackTrace();
 		} finally {
 			if (null != conn) {
 				conn.close();				

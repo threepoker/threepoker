@@ -1,5 +1,6 @@
 package com.server.netty.websocket;
 
+import com.server.Utils.XFStack;
 import com.server.game.manager.UserManager;
 
 import java.lang.reflect.InvocationTargetException;
@@ -30,27 +31,39 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 	private static final Logger logger = Logger.getLogger(WebSocketServerHandshaker.class.getName());
 	private WebSocketServerHandshaker handshaker;
 	@Override
-	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		// 添加
-		Global.group.add(ctx.channel());
-		System.out.println("客户端与服务端连接开启");
+	public void channelActive(ChannelHandlerContext ctx) {
+		try {
+			// 添加
+			Global.group.add(ctx.channel());
+			System.out.println("客户端与服务端连接开启");
+		} catch (Exception e) {
+			XFStack.logStack(e);
+		}
 		
 	}
 	@Override
-	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-		// 移除
-		Global.group.remove(ctx.channel());
-		UserManager.getInstance().remove(ctx.channel());
-		System.out.println("客户端与服务端连接关闭");
+	public void channelInactive(ChannelHandlerContext ctx)  {
+		try {
+			// 移除
+			Global.group.remove(ctx.channel());
+			UserManager.getInstance().remove(ctx.channel());
+			System.out.println("客户端与服务端连接关闭");
+		} catch (Exception e) {
+			XFStack.logStack(e);
+		}
 	}
 	
 	
 	@Override
-	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-		ctx.flush();
+	public void channelReadComplete(ChannelHandlerContext ctx)  {
+		try {
+			ctx.flush();
+		} catch (Exception e) {
+			XFStack.logStack(e);
+		}
 	}
 	private void handlerWebSocketFrame(ChannelHandlerContext ctx,
-			WebSocketFrame frame) throws SQLException, JSONException {
+			WebSocketFrame frame) {
 		// 判断是否关闭链路的指令
 		if (frame instanceof CloseWebSocketFrame) {
 			handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame
@@ -68,19 +81,11 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 			throw new UnsupportedOperationException(String.format(
 					"%s frame types not supported", frame.getClass().getName()));
 		}
-		String request = ((TextWebSocketFrame) frame).text();
 		try {
+			String request = ((TextWebSocketFrame) frame).text();
 			MsgManager.getInstance().getMsg(request,ctx.channel());
-
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			XFStack.logStack(e);
 		}
 	}
 	private void handleHttpRequest(ChannelHandlerContext ctx,
@@ -120,19 +125,25 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 		return false;
 	}
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-			throws Exception {
-		cause.printStackTrace();
-		ctx.close();
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
+		try {
+			cause.printStackTrace();
+			ctx.close();			
+		} catch (Exception e) {
+			XFStack.logStack(e);
+		}
 	}
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, Object msg)
-			throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
 		// TODO Auto-generated method stub
-		if (msg instanceof FullHttpRequest) {
-			handleHttpRequest(ctx, ((FullHttpRequest) msg));
-		} else if (msg instanceof WebSocketFrame) {
-			handlerWebSocketFrame(ctx, (WebSocketFrame) msg);
+		try {
+			if (msg instanceof FullHttpRequest) {
+				handleHttpRequest(ctx, ((FullHttpRequest) msg));
+			} else if (msg instanceof WebSocketFrame) {
+				handlerWebSocketFrame(ctx, (WebSocketFrame) msg);
+			}			
+		} catch (Exception e) {
+			XFStack.logStack(e);
 		}
 	}
 	
