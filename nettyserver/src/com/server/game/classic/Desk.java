@@ -1,33 +1,39 @@
 package com.server.game.classic;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.server.Utils.NotificationCenter;
 import com.server.Utils.NotificationTag;
+import com.server.Utils.XFException;
 import com.server.Utils.XFLog;
 import com.server.game.card.CardUtils;
+import com.server.game.common.Const;
 import com.server.game.data.BaseConfig;
 import com.server.game.data.DeskUserData;
 import com.server.game.data.User;
 import com.server.game.manager.TimerManager;
 import com.server.game.proto.ProtoDesk;
 import com.server.game.proto.ProtoTag;
+import com.sun.net.httpserver.Authenticator.Success;
 
 public class Desk {
 	private int level;
 	private Map<Integer, User> userMap = new HashMap<Integer,User>();
-	private int putIntoTotalGold = 0;
-	private int	singlePutIntoGold = 0;
+	private long putIntoTotalGold = 0;
+	private long singlePutIntoGold = 0;
 	private int currentRound = 0;
 	private int maxRound = BaseConfig.getInstance().MAXROUND;
 	private int curTurnEndTime = 0;//秒
-	private boolean status =false;//true在玩，false等待
 	private CardUtils cardUtils = new CardUtils();
 	private User curTurnUser;
 	private int roundCountDown = 0;
-	private final int ROUNDMAXTIME = 8;
+	private final int ROUNDMAXTIME = 8000;
+	private final int RESULTTIME = 5;
 	public Desk(int level) {
 		this.level = level;
 	}
@@ -42,9 +48,11 @@ public class Desk {
 		user.setDeskUserData(deskUserData);	
 		if (1 == userMap.size()) {
 			setBanker(user);
-			NotificationCenter.getInstance().addObserver(this, "operateCard", NotificationTag.Notif_OperateCard.value, null);
+			NotificationCenter.getInstance().addObserver(this, "operateCardReq", NotificationTag.Notif_OperateCard.value, null);
+		}else if(2 == userMap.size()){
+			TimerManager.getInstance().unScheduleByKey(this.getClass().getName()+"dealCard");
+			dealCard();			
 		}
-		dealCard();
 	}
 	public void removeUser(User user) {
 		user.setDeskUserData(null);
@@ -84,40 +92,53 @@ public class Desk {
 	 * 游戏逻辑
 	 */
 	private void dealCard(){
-		if (status || userMap.size()<2) {
+		if (userMap.size()<2) {
 			return;
 		}
-		status = true;
 		cardUtils.reSetcards();
 		for (User user : userMap.values()) {
-			user.getDeskUserData().gameBegin();
+			user.getDeskUserData().reSet();
 			user.getDeskUserData().setCards(cardUtils.getRandomCards());
 			ProtoDesk.getInstance().notifyDealCardRes(user.getChannel(), getBanker().getUserId());
 		}
 		long dealCardTime = 2000;
-		TimerManager.getInstance().scheduleOnce(this, "startRound",dealCardTime);
-		curTurnUser = getNextRoundUser(getBanker());
+		curTurnUser = getBanker();
+		TimerManager.getInstance().scheduleOnce(this, "goNextRound",dealCardTime);
 	}
 	public void countDown() {
 		setRoundCountDown(getRoundCountDown()-1);
 		XFLog.out().println("roundCountDown = "+roundCountDown);
 		if (roundCountDown<=0) {
 			curTurnUser.getDeskUserData().setGiveUp(true);
-			curTurnUser = getNextRoundUser(curTurnUser);
-			if (null == curTurnUser) {
-				return;
-			}
-			startRound();
+			goNextRound();
 		}
 	}
-	public void startRound(){
+	public void goNextRound(){
+		curTurnUser = getNextRoundUser(curTurnUser);
+		if (null == curTurnUser) {
+			return;
+		}
 		round();
-		setRoundCountDown(ROUNDMAXTIME);
-		TimerManager.getInstance().schedule(this, "countDown",1000,ROUNDMAXTIME);
+		TimerManager.getInstance().schedule(this, "countDown",1000,ROUNDMAXTIME/1000);
 	}
-	public void round(){;
+	public void round(){
+		setRoundCountDown(ROUNDMAXTIME/1000);
 		for (User user : userMap.values()) {
 			ProtoDesk.getInstance().notifyRoundRes(user);
+		}
+	}
+	public void showResult(){
+		TimerManager.getInstance().scheduleOnce(this, "dealCard", RESULTTIME);
+		long totalPutIn = 0;
+		Map<Integer, User> noGiveUpPlayingMap = getNoGiveUpPlayingMap();
+		if (0 == noGiveUpPlayingMap.size()) {
+			Exception e = new Exception("结算出错，没有胜利玩家");
+			XFException.logException(e);
+			return;
+		}
+		long winGold = getPutIntoTotalGold()/noGiveUpPlayingMap.size();
+		for(User user : noGiveUpPlayingMap.values()){
+			user.setGold(user.getGold()+winGold);
 		}
 	}
 	private User getNextRoundUser(User user){
@@ -134,8 +155,9 @@ public class Desk {
 			}
 		}
 		//仅剩下一个没弃牌正在游戏中的玩家
-		if (1 == getNoGiveUpPlayingMap().size()) {
+		if (1 == getNoGiveUpPlayingMap().size()) {//延迟100毫秒结算
 			XFLog.out().println("胜利的玩家："+getNoGiveUpPlayingMap().toString());
+			showResult();
 			return null;
 		}
 		return nextRoundUser;
@@ -156,16 +178,107 @@ public class Desk {
 		}
 		return bankerUser;
 	}
-	public int getPutIntoTotalGold() {
+	public void operateCardReq(Object object) {
+		int status = 1;
+		String	result = "";  // 字符串提示
+		int userId = 0;
+		int type = 1;
+		int compareUserId = 0;
+		int winnerUserId = 0;
+		ArrayList<Integer> userCardArrayList = null;
+		ArrayList<Integer> compareCardArrayList = null;
+
+		JSONObject jsonObject = (JSONObject)(object);
+		int reqUserId = 0;
+		User reqUser = null;
+		try {
+			reqUserId = jsonObject.getInt("userId");
+			reqUser = getUserMap().get(reqUserId);
+			type = jsonObject.getInt("type");
+			if (reqUser == null) 
+				return;
+		} catch (JSONException e) {
+			XFException.logException(e);
+		}
+		if (reqUser.getUserId() != curTurnUser.getUserId()) {
+			ProtoDesk.getInstance().operateCardRes(reqUser.getChannel(), 0, "不在操作时间", reqUserId, type);
+			return;
+		}
+		String operateResult = "";
+		switch (OperateCardTag.getEnumTag(type)) {
+		case OperateCardFollowToEnd:
+		{
+			operateResult = OperateCardFollowToEnd();
+			if (Const.SUCCESS != operateResult) {
+				status = 0;
+				result = operateResult;
+			}
+			break;			
+		}
+		case OperateCardGiveUp:
+		{
+			curTurnUser.getDeskUserData().setGiveUp(true);
+			goNextRound();
+			break;	
+		}
+		case OperateCardCompare:
+			
+			break;
+		case OperateCardSee:
+		{
+			userCardArrayList = curTurnUser.getDeskUserData().getCards();
+			break;			
+		}
+		case OperateCardFollow:
+		{
+			boolean isSeeCard = curTurnUser.getDeskUserData().isSeeCard();
+			long needGold = isSeeCard ? 2*getSinglePutIntoGold() : getSinglePutIntoGold();
+			if (curTurnUser.getGold() >= needGold) {
+				curTurnUser.setGold(curTurnUser.getGold()-needGold);
+				setPutIntoTotalGold(getPutIntoTotalGold()+needGold);
+				
+			}else {
+				status = 0;
+				result = "金币不足";
+			}
+			goNextRound();
+			break; 
+		}
+		case OperateCardRise:
+			
+			break;
+		case OperateCardAllIn:
+			
+			break;
+		default:
+			break;
+		}
+		ProtoDesk.getInstance().operateCardRes(reqUser.getChannel(), 0, "不在操作时间", reqUserId, type
+				,compareUserId,winnerUserId,userCardArrayList,compareCardArrayList);
+	}
+	String OperateCardFollowToEnd(){
+		goNextRound();
+		return Const.SUCCESS;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public long getPutIntoTotalGold() {
 		return putIntoTotalGold;
 	}
-	public void setPutIntoTotalGold(int putIntoTotalGold) {
+	public void setPutIntoTotalGold(long putIntoTotalGold) {
 		this.putIntoTotalGold = putIntoTotalGold;
 	}
-	public int getSinglePutIntoGold() {
+	public long getSinglePutIntoGold() {
 		return singlePutIntoGold;
 	}
-	public void setSinglePutIntoGold(int singlePutIntoGold) {
+	public void setSinglePutIntoGold(long singlePutIntoGold) {
 		this.singlePutIntoGold = singlePutIntoGold;
 	}
 	public int getCurrentRound() {

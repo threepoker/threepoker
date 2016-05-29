@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
 
+import com.server.Utils.XFException;
 import com.server.Utils.XFStack;
 import com.server.db.TableCommonHandle;
 import com.server.db.TableConfigDeskChipHandle;
@@ -35,7 +36,7 @@ public class BaseConfigManager {
 				BaseConfig.getInstance().NEWUSERGOLD = rSet.getInt(rSet.findColumn("newUserGold"));
 			}
 		} catch (SQLException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	private void parseConfigDesk() {
@@ -52,7 +53,7 @@ public class BaseConfigManager {
 				BaseConfig.getInstance().MAXROUND = rSet.getInt(rSet.findColumn("maxRound"));
 			}
 		} catch (SQLException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	private void parseConfigDeckChip(){
@@ -75,7 +76,7 @@ public class BaseConfigManager {
 				configChips.put(configDeskChip.getLevel(), configDeskChip);
 			}
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		} 
 	}
 	

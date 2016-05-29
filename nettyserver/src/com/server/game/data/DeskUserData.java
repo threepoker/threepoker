@@ -19,7 +19,7 @@ public class DeskUserData {
 	private final int COMPARETURNLIMIT = 1;//至少一轮才能比牌
 	private final int ALLINTURNLIMIT = 5;//至少五轮才能比牌
 	private final int FOLLORATEWLIMIT = 3;//
-	public void gameBegin(){
+	public void reSet(){
 		setPutInGold(0);
 		setSeeCard(false);
 		setGiveUp(false);

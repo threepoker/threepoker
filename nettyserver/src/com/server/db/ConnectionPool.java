@@ -72,7 +72,7 @@ public class ConnectionPool {
 		try {
 			createPool();
 		} catch (Exception e) {
-			e.printStackTrace();
+			XFException.logException(e);
 		}
 
 	}
@@ -220,9 +220,7 @@ public class ConnectionPool {
 			Driver driver = (Driver) (Class.forName(this.jdbcDriver).newInstance());
 			DriverManager.registerDriver(driver);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			XFStack.logStack(e);
-			e.printStackTrace();
 		} // 注册 JDBC 驱动程序
 
 		// 创建保存连接的向量 , 初始时有 0 个元素
@@ -271,13 +269,9 @@ public class ConnectionPool {
 			// 增加一个连接到连接池中（向量 connections 中）
 
 			try {
-
 				connections.addElement(new PooledConnection(newConnection()));
-
 			} catch (SQLException e) {
 				XFException.logException(e);
-				System.out.println(" 创建数据库连接失败！ " + e.getMessage());
-
 			}
 
 			System.out.println(" 数据库连接己创建 ......");
@@ -293,13 +287,15 @@ public class ConnectionPool {
 	 * 
 	 * 
 	 * @return 返回一个新创建的数据库连接
+	 * @throws SQLException 
 	 */
 
-	private Connection newConnection() throws SQLException {
+	private Connection newConnection() throws SQLException{
 
 		// 创建一个数据库连接
 		
-		Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+		Connection conn = null;
+		conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
 
 		// 如果这是第一次创建数据库连接，即检查数据库，获得此数据库允许支持的
 
@@ -328,9 +324,7 @@ public class ConnectionPool {
 				this.maxConnections = driverMaxConnections;
 
 			}
-
 		}
-
 		return conn; // 返回创建的新的数据库连接
 
 	}
@@ -460,8 +454,8 @@ public class ConnectionPool {
 					try {
 						conn = newConnection();
 						pc.setConnection(conn);
-					} catch (SQLException e) {
-						e.printStackTrace();
+					} catch (Exception e) {
+						XFException.logException(e);
 						connections.remove(i--);
 						continue;
 					}
@@ -496,8 +490,7 @@ public class ConnectionPool {
 		try {
 			return conn.isValid(3);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			XFException.logException(e);
 			return false;
 		}
 		// try {
@@ -596,7 +589,7 @@ public class ConnectionPool {
 	 * 
 	 */
 
-	public synchronized void refreshConnections() throws SQLException {
+	public synchronized void refreshConnections() {
 
 		// 确保连接池己创新存在
 
@@ -630,7 +623,11 @@ public class ConnectionPool {
 
 			closeConnection(pConn.getConnection());
 
-			pConn.setConnection(newConnection());
+			try {
+				pConn.setConnection(newConnection());
+			} catch (SQLException e) {
+				XFException.logException(e);
+			}
 
 			pConn.setBusy(false);
 
@@ -643,7 +640,7 @@ public class ConnectionPool {
 	 * 关闭连接池中所有的连接，并清空连接池。
 	 */
 
-	public synchronized void closeConnectionPool() throws SQLException {
+	public synchronized void closeConnectionPool()  {
 
 		// 确保连接池存在，如果不存在，返回
 
@@ -703,7 +700,7 @@ public class ConnectionPool {
 			conn.close();
 
 		} catch (SQLException e) {
-
+			XFException.logException(e);
 			System.out.println(" 关闭数据库连接出错： " + e.getMessage());
 
 		}
@@ -757,7 +754,6 @@ public class ConnectionPool {
 				return connection.createStatement().executeQuery(sql);
 			} catch (SQLException e) {
 				XFStack.logStack(e);
-				e.printStackTrace();
 			}
 			return null;
 		}
@@ -767,7 +763,6 @@ public class ConnectionPool {
 				return connection.createStatement().executeUpdate(sql);
 			} catch (SQLException e) {
 				XFStack.logStack(e);
-				e.printStackTrace();
 			}
 			return 0;
 		}
@@ -783,7 +778,6 @@ public class ConnectionPool {
 				return (PreparedStatement) connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 			} catch (SQLException e) {
 				XFStack.logStack(e);
-				e.printStackTrace();
 			}
 			return null;
 		}

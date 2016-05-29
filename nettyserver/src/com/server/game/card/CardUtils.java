@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Random;
 
 import com.server.Utils.XFLog;
+import com.server.game.classic.OperateCardTag;
 import com.server.game.data.BaseConfig;
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 
@@ -14,7 +15,18 @@ import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.Collections;
 //0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2A,0x2B,0x2C,0x2D,	//红桃 A - K
 //0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x3A,0x3B,0x3C,0x3D,	//黑桃 A - K
 enum CardType {
-	UNKNOW,E_DL, E_BZ,E_SJ,E_JH,E_SZ,E_DZ,E_GP,
+	E_BZ(8),E_SJ(7),E_JH(6),E_SZ(5),E_DZ(4),E_GP(3),E_DL(2),E_UNKNOW(1);
+	public final int value;
+	private CardType(int value){
+		this.value = value; 
+	}
+	public static CardType getCardType(int value) { 
+        for (CardType code : values()) { 
+            if (code.value == value) 
+                return code; 
+        }
+        return null; 
+    } 
 }
 public class CardUtils {
 	private final float dl = BaseConfig.getInstance().GLDL;
@@ -253,7 +265,7 @@ public class CardUtils {
 					cards.add(cards_.get(i));
 					cards.add(cards_.get(j));
 					cards.add(cards_.get(k));
-					if (!isDLCard(cards) && !isBZCard(cards) && !isSameTypeCard(cards) && !isSZCard(cards) && !isDZCard(cards)) {
+					if (!isDLCard(cards) && !isBZCard(cards) && !isSameColorCard(cards) && !isSZCard(cards) && !isDZCard(cards)) {
 						for (int l = 0; l < cards.size(); l++) {
 							removeArryListValue(cards_, cards.get(l));
 						}
@@ -269,7 +281,7 @@ public class CardUtils {
 	
 	
 	/////////////////////################### 判断牌型   #########################////////////////////////////////
-	public boolean isDLCard(ArrayList<Integer> pCard){
+	public static boolean isDLCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
 			XFLog.out().println("error error error error error error error error error isDLCard cards num is error");
 			return false;
@@ -299,7 +311,7 @@ public class CardUtils {
 		XFLog.out().println("card : "+pCard.get(0)+" "+pCard.get(1)+" "+pCard.get(2)+" is dilong");
 		return true;
 	}
-	public boolean isBZCard(ArrayList<Integer> pCard){
+	public static boolean isBZCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
 			XFLog.out().println("error error error error error error error error error isBZCard cards num is error");
 			return false;
@@ -311,12 +323,12 @@ public class CardUtils {
 		}
 		return true;
 	}
-	public boolean isSJCard(ArrayList<Integer> pCard){
+	public static boolean isSJCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
 			XFLog.out().println("error error error error error error error error error isSJCard cards num is error");
 			return false;
 		}
-		if (!isSameTypeCard(pCard)) {
+		if (!isSameColorCard(pCard)) {
 			return false;
 		}
 		
@@ -341,22 +353,22 @@ public class CardUtils {
 		}
 		return false;
 	}
-	public boolean isJHCard(ArrayList<Integer> pCard){
+	public static boolean isJHCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
 			XFLog.out().println("error error error error error error error error error isJHCard cards num is error");
 			return false;
 		}
-		if (isSameTypeCard(pCard) && !isSJCard(pCard) ) {
+		if (isSameColorCard(pCard) && !isSJCard(pCard) ) {
 			return true;
 		}
 		return false;
 	}
-	public boolean isSZCard(ArrayList<Integer> pCard){
+	public static boolean isSZCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
 			XFLog.out().println("error error error error error error error error error isSZCard cards num is error");
 			return false;
 		}
-		if (isSameTypeCard(pCard)) {
+		if (isSameColorCard(pCard)) {
 			return false;
 		}
 
@@ -381,7 +393,7 @@ public class CardUtils {
 		}
 		return false;
 	}
-	public boolean isDZCard(ArrayList<Integer> pCard){
+	public static boolean isDZCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
 			XFLog.out().println("error error error error error error error error error isDZCard cards num is error");
 			return false;
@@ -394,12 +406,12 @@ public class CardUtils {
 		}
 		return false;
 	}
-	public boolean isGPCard(ArrayList<Integer> pCard){
+	public static boolean isGPCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
 			XFLog.out().println("error error error error error error error error error isGPCard cards num is error");
 			return false;
 		}
-		if (!isDLCard(pCard) && !isBZCard(pCard) && !isSameTypeCard(pCard) && !isSZCard(pCard) && !isDZCard(pCard)) {
+		if (!isDLCard(pCard) && !isBZCard(pCard) && !isSameColorCard(pCard) && !isSZCard(pCard) && !isDZCard(pCard)) {
 			return true;
 		}
 		return false;
@@ -428,6 +440,9 @@ public class CardUtils {
 		return type;
 	}
 	public ArrayList<Integer> getRandomCards(){
+		if (cards_.size() < 3) {
+			return null;
+		}
 		CardType type = getRandomCardType();
 		ArrayList<Integer> cards = null;
 		switch (type) {
@@ -458,6 +473,7 @@ public class CardUtils {
 		if (cards.size() != 3) {
 			cards = getRandomCards();
 		}
+		sortCardsSmallBig(cards);
 		return cards;
 	}
 	public void reSetcards(){
@@ -492,17 +508,17 @@ public class CardUtils {
 			}
 		}
 	}
-	public CardType getCardsType(ArrayList<Integer> pCard){
+	public static CardType getCardsType(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
 			XFLog.out().println("error error error error error error error error error getCardsType cards num is error");
-			return CardType.UNKNOW;
+			return CardType.E_UNKNOW;
 		}
 
-		return CardType.UNKNOW;
+		return CardType.E_UNKNOW;
 	}
-	public boolean isSameTypeCard(ArrayList<Integer> pCard){
+	public static boolean isSameColorCard(ArrayList<Integer> pCard){
 		if (pCard.size() != 3) {
-			XFLog.out().println("error error error error error error error error error isSameTypeCard cards num is error");
+			XFLog.out().println("error error error error error error error error error isSameColorCard cards num is error");
 			return false;
 		}
 		int iType = (int)(byte)(pCard.get(0)&0xF0>>4);
@@ -511,7 +527,7 @@ public class CardUtils {
 		}
 		return false;
 	}
-	public ArrayList<Integer> sortCardsSmallBig(ArrayList<Integer> pCards){
+	public static ArrayList<Integer> sortCardsSmallBig(ArrayList<Integer> pCards){
 		for (int i = 0; i < pCards.size()-1; i++) {
 			for (int j = i+1; j < pCards.size(); j++) {
 				int iCard = (int)(pCards.get(i) & 0x0F);
@@ -526,5 +542,11 @@ public class CardUtils {
 			}
 		}
 		return pCards;
-	}	
+	}
+	public static boolean compareCards(ArrayList<Integer> first,ArrayList<Integer> second){
+		if (first.size() != 3 || second.size() != 3) {
+			return false;
+		}		
+		return false;
+	}
 }

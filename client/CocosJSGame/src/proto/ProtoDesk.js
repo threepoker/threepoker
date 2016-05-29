@@ -3,6 +3,7 @@ var ProtoDesk = {
 			NotificationCenter.addObserver(ProtoDesk, ProtoDesk.enterDeskRes, ProtoTag.ENTERDESK, null);
 			NotificationCenter.addObserver(ProtoDesk, ProtoDesk.getDeskInfoRes, ProtoTag.GETDESKINFO, null);
 			NotificationCenter.addObserver(ProtoDesk, ProtoDesk.exitDeskRes, ProtoTag.EXITDESK, null);
+			NotificationCenter.addObserver(ProtoDesk, ProtoDesk.dealCardNotifyRes, ProtoTag.DEALCARDNOTIFY, null);
 		},
 		enterDeskReq:function(level){
 			var json = {};
@@ -14,7 +15,6 @@ var ProtoDesk = {
 		enterDeskRes:function(data){	
 			cc.log("ProtoDesk loginRes data = "+data);
 			if(1 == data.status){//进桌成功
-				ProtoDesk.getDeskInfoReq();
 				NotificationCenter.postNotification(NotificationTag.SHOWDESKSCENE, null);
 			}else{//进桌失败
 				cc.log("enter desk fail");
@@ -36,6 +36,9 @@ var ProtoDesk = {
 			NetWork.sendMSG(JSON.stringify(json));
 		},
 		getDeskInfoRes:function(data){
+			
+		},
+		dealCardNotifyRes:function(data){
 			
 		},
 } 

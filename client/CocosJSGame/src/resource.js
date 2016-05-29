@@ -6,7 +6,8 @@ var res = {
     
     HALLJSON:"res/ui/hall.json",
     LOGOJSON:"res/ui/logo.json",
-    DESKJSON:"res/ui/desk.json"
+    DESKJSON:"res/ui/desk.json",
+    DESKPLAYERJSON:"res/ui/deskPlayer.json"
 };
 
 var textArr = [

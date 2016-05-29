@@ -16,7 +16,6 @@ var NetWork = {
 				
 				var object = eval('('+message.data+')');
 				var tag = object["tag"];
-				cc.log("onmessage tag="+tag);
 				NotificationCenter.postNotification(tag,object);
 			};	
 			this.ws.onclose = function(e){ 

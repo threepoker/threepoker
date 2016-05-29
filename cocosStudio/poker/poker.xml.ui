@@ -10,6 +10,7 @@
     <string>desk.json</string>
     <string>hall.json</string>
     <string>logo.json</string>
+    <string>deskPlayer.json</string>
   </JsonList>
   <CanvasSize>
     <Width>1280</Width>
@@ -21,5 +22,5 @@
   <imageFileList />
   <imagePngList />
   <JsonSuffix>.json</JsonSuffix>
-  <CurrentUIJson>logo.json</CurrentUIJson>
+  <CurrentUIJson>deskPlayer.json</CurrentUIJson>
 </UIProject>

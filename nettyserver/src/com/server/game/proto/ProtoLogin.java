@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.server.Utils.NotificationCenter;
+import com.server.Utils.XFException;
 import com.server.Utils.XFLog;
 import com.server.Utils.XFStack;
 import com.server.db.TableUserHandle;
@@ -22,7 +23,7 @@ public class ProtoLogin {
 	public static ProtoLogin getInstance() {
 		if (null == instance) {
 			instance = new ProtoLogin();
-			NotificationCenter.getInstance().addObserver(instance, "getUserInfoReq", ProtoTag.PROTOGETUSERINFO.value, null);
+			NotificationCenter.getInstance().addObserver(instance, "getUserInfoReq", ProtoTag.proto_getUserInfo.value, null);
 		}
 		return instance;
 	}
@@ -30,13 +31,13 @@ public class ProtoLogin {
 	public void loginRes(Channel channel,int status ,String result,int userId) {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("tag", ProtoTag.PROTOLOGIN.value);
+			jsonObject.put("tag", ProtoTag.proto_login.value);
 			jsonObject.put("result", result);
 			jsonObject.put("status", status);
 			jsonObject.put("userId", userId);
 			MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void loginReq(JSONObject data,Channel channel) {
@@ -76,7 +77,7 @@ public class ProtoLogin {
 			}
 			XFLog.out().println("loginResult = "+loginResult+" userId="+userId);
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 		
 	}
@@ -93,10 +94,10 @@ public class ProtoLogin {
 				jsonRes.put("status", 0);
 				jsonRes.put("result", "获取用户数据失败");
 			}
-			jsonRes.put("tag", ProtoTag.PROTOGETUSERINFO.value);
+			jsonRes.put("tag", ProtoTag.proto_getUserInfo.value);
 			MsgManager.getInstance().sendMsg(jsonRes.toString(),user.getChannel());
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void getUserInfoReq(Object object){
@@ -119,7 +120,7 @@ public class ProtoLogin {
 			}
 			return loginResult;
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 		return false;
 	}

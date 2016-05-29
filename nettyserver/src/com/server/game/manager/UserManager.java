@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.server.Utils.XFException;
 import com.server.db.TableConfigDeskChipHandle;
 import com.server.db.TableUserFortuneHandle;
 import com.server.db.TableUserHandle;
@@ -22,21 +23,25 @@ public class UserManager {
 		}
 		return instance;
 	}
-	public void add(int userId,Channel channel) throws NumberFormatException, SQLException{
-		User user = new User(userId);
-		ResultSet rSet = TableUserFortuneHandle.getInstance().select("userId",userId);
-		if (null!=rSet && rSet.next()) {
-			user.setGold(rSet.getLong(rSet.findColumn("gold")));
-			user.setDiamond(rSet.getInt(rSet.findColumn("diamond")));
+	public void add(int userId,Channel channel){
+		try {
+			User user = new User(userId);
+			ResultSet rSet = TableUserFortuneHandle.getInstance().select("userId",userId);
+			if (null!=rSet && rSet.next()) {
+				user.setGold(rSet.getLong(rSet.findColumn("gold")));
+				user.setDiamond(rSet.getInt(rSet.findColumn("diamond")));
+			}
+			rSet = TableUserHandle.getInstance().selectUser("userId", userId);
+			if (null!=rSet && rSet.next()) {
+				user.setUserName(rSet.getString(rSet.findColumn("nickName")));
+				user.setHead(rSet.getString(rSet.findColumn("head")));
+			}
+			remove(user.getUserId());
+			user.setChannel(channel);
+			userList.add(user);
+		} catch (SQLException e) {
+			XFException.logException(e);
 		}
-		rSet = TableUserHandle.getInstance().selectUser("userId", userId);
-		if (null!=rSet && rSet.next()) {
-			user.setUserName(rSet.getString(rSet.findColumn("nickName")));
-			user.setHead(rSet.getString(rSet.findColumn("head")));
-		}
-		remove(user.getUserId());
-		user.setChannel(channel);
-		userList.add(user);
 	}
 	public void remove(Channel channel){
 		Iterator<User> it = userList.iterator();

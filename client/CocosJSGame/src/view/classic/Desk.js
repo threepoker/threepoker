@@ -7,6 +7,7 @@ var DeskScene = cc.Scene.extend({
 });  
 var Desk = cc.Layer.extend({
 	sprite:null,
+	posDiff:0,
 	ctor:function () {
 		//////////////////////////////
 		// 1. super init first
@@ -16,11 +17,12 @@ var Desk = cc.Layer.extend({
 		this.addChild(root)
 		var btnBack = ccui.helper.seekWidgetByName(root, "Button_back");
 		btnBack.addTouchEventListener(this.btnBackTouch, this);
-
+		
 		return true;
 	},
 	onEnter:function (){
-		NotificationCenter.addObserver(ProtoDesk, ProtoDesk.getDeskInfoRes, ProtoTag.GETDESKINFO, null);
+		ProtoDesk.getDeskInfoReq();
+		NotificationCenter.addObserver(this, this.getDeskInfoRes, ProtoTag.GETDESKINFO, null);
 		this._super();
 	},
 
@@ -35,6 +37,19 @@ var Desk = cc.Layer.extend({
 		}
 	},
 	getDeskInfoRes:function(data){
-		
+		var selfPos = 0;
+		var i = 0;
+		for(i=0; i<data.userNum; i++){
+			if (User.userId == data[i+"_userId"]) {
+				selfPos = data[i+"_userPos"];
+				break;
+			} 
+		}
+		for(i=0; i<5; i++){
+			if((i+selfPos)%5==2){
+				this.posDiff = i;
+				break;
+			}
+		}
 	},
 });

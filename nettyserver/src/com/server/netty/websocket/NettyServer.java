@@ -4,6 +4,7 @@ package com.server.netty.websocket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.server.Utils.XFException;
 import com.server.Utils.XFLog;
 import com.server.game.manager.BaseConfigManager;
 import com.server.game.proto.ProtoDesk;
@@ -46,7 +47,7 @@ public class NettyServer {
 			ch.closeFuture().sync();
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			XFException.logException(e);
 		}finally{
 			bossGroup.shutdownGracefully();
 			workGroup.shutdownGracefully();

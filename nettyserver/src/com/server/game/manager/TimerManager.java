@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.server.Utils.XFException;
 import com.server.Utils.XFLog;
 import com.server.game.classic.Desk;
 
@@ -94,7 +95,7 @@ public class TimerManager {
 					| SecurityException
 					| InvocationTargetException e
 					) {
-				e.printStackTrace();
+				XFException.logException(e);
 			} 
 	    	
 	    }

@@ -1,5 +1,6 @@
 package com.server.netty.websocket;
 
+import com.server.Utils.XFException;
 import com.server.Utils.XFStack;
 import com.server.game.manager.UserManager;
 
@@ -37,7 +38,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 			Global.group.add(ctx.channel());
 			System.out.println("客户端与服务端连接开启");
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 		
 	}
@@ -49,7 +50,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 			UserManager.getInstance().remove(ctx.channel());
 			System.out.println("客户端与服务端连接关闭");
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	
@@ -59,7 +60,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 		try {
 			ctx.flush();
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	private void handlerWebSocketFrame(ChannelHandlerContext ctx,
@@ -85,7 +86,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 			String request = ((TextWebSocketFrame) frame).text();
 			MsgManager.getInstance().getMsg(request,ctx.channel());
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	private void handleHttpRequest(ChannelHandlerContext ctx,
@@ -127,10 +128,10 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
 		try {
-			cause.printStackTrace();
+			XFException.logException((Exception)cause);
 			ctx.close();			
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	@Override
@@ -143,7 +144,7 @@ public class MyWebSocketServerHandler extends SimpleChannelInboundHandler<Object
 				handlerWebSocketFrame(ctx, (WebSocketFrame) msg);
 			}			
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	

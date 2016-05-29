@@ -1,5 +1,6 @@
 package com.server.game.proto;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import io.netty.channel.Channel;
@@ -8,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.server.Utils.NotificationCenter;
+import com.server.Utils.XFException;
 import com.server.Utils.XFLog;
 import com.server.Utils.XFStack;
 import com.server.game.classic.Desk;
@@ -24,10 +26,10 @@ public class ProtoDesk {
 	public static ProtoDesk getInstance() {
 		if (null == instance) {
 			instance = new ProtoDesk();
-			NotificationCenter.getInstance().addObserver(instance, "enterDeskReq", ProtoTag.PROTOENTERDESK.value, null);
-			NotificationCenter.getInstance().addObserver(instance, "exitDeskReq", ProtoTag.PROTOEXITDESK.value, null);
-			NotificationCenter.getInstance().addObserver(instance, "getDeskInfoReq", ProtoTag.PROTOGETDESKINFO.value, null);
-			NotificationCenter.getInstance().addObserver(instance, "operateCardReq", ProtoTag.PROTOOPERATECARD.value, null);
+			NotificationCenter.getInstance().addObserver(instance, "enterDeskReq", ProtoTag.proto_enterDesk.value, null);
+			NotificationCenter.getInstance().addObserver(instance, "exitDeskReq", ProtoTag.proto_exitDesk.value, null);
+			NotificationCenter.getInstance().addObserver(instance, "getDeskInfoReq", ProtoTag.proto_getDeskInfo.value, null);
+			NotificationCenter.getInstance().addObserver(instance, "operateCardReq", ProtoTag.proto_operateCard.value, null);
 		}
 		return instance;
 	}
@@ -38,13 +40,13 @@ public class ProtoDesk {
 			user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
 			enterDeskRes(user.getChannel(), DeskManager.getInstance().enterDesk(user, jsonObject.getInt("level")));
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void enterDeskRes(Channel channel,String res) {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("tag", ProtoTag.PROTOENTERDESK.value);
+			jsonObject.put("tag", ProtoTag.proto_enterDesk.value);
 			if (Const.SUCCESS == res) {
 				jsonObject.put("status", 1);
 			}else {
@@ -53,13 +55,13 @@ public class ProtoDesk {
 			}
 			MsgManager.getInstance().sendMsg(jsonObject.toString(), channel);
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void notifyEnterDeskRes(Channel channel,User user)  {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("tag", ProtoTag.PROTONOTIFYENTERDESK.value);
+			jsonObject.put("tag", ProtoTag.proto_notifyEnterDesk.value);
 			jsonObject.put("userId", user.getUserId());
 			jsonObject.put("nickName",user.getUserName());
 			jsonObject.put("gold", user.getGold());
@@ -67,7 +69,7 @@ public class ProtoDesk {
 			jsonObject.put("head", user.getHead());
 			MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void exitDeskReq(Object object) {
@@ -77,13 +79,13 @@ public class ProtoDesk {
 			user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
 			exitDeskRes(user.getChannel(), DeskManager.getInstance().exitDesk(user));
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void exitDeskRes(Channel channel,String res) {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("tag", ProtoTag.PROTOEXITDESK.value);
+			jsonObject.put("tag", ProtoTag.proto_exitDesk.value);
 			if (Const.SUCCESS == res) {
 				jsonObject.put("status", 1);
 			}else {
@@ -92,17 +94,17 @@ public class ProtoDesk {
 			}
 			MsgManager.getInstance().sendMsg(jsonObject.toString(), channel);
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void notifyExitDeskRes(Channel channel,User user) {
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("tag", ProtoTag.PROTONOTIFYEXITDESK.value);
+			jsonObject.put("tag", ProtoTag.proto_notifyExitDesk.value);
 			jsonObject.put("userId", user.getUserId());
 			MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	
@@ -113,14 +115,14 @@ public class ProtoDesk {
 			user = UserManager.getInstance().getUser(jsonObject.getInt("userId"));
 			getDeskInfoRes(user);
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void getDeskInfoRes(User user) {
 
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("tag", ProtoTag.PROTOGETDESKINFO.value);
+			jsonObject.put("tag", ProtoTag.proto_getDeskInfo.value);
 			Desk desk = DeskManager.getInstance().getDesk(user.getUserId());
 			if (null == desk) {
 				jsonObject.put("status", 0);
@@ -129,8 +131,8 @@ public class ProtoDesk {
 				return;
 			}
 			int userNum = desk.getUserMap().size();
-			jsonObject.put("playerNum", userNum);
-			jsonObject.put("status", 0);
+			jsonObject.put("userNum", userNum);
+			jsonObject.put("status", 1);
 			int index = 0;
 			for (User userIterUser : desk.getUserMap().values()) {
 				jsonObject.put(index+"_userId", userIterUser.getUserId());
@@ -143,6 +145,7 @@ public class ProtoDesk {
 					jsonObject.put(index+"_userIsGiveUp", deskUserData.isGiveUp());
 				}
 				jsonObject.put(index+"_userPos", userIterUser.getDeskUserData().getPos());
+				index++;
 			}
 			jsonObject.put("putIntoTotalGold", desk.getPutIntoTotalGold());
 			jsonObject.put("singlePutIntoGold", desk.getSinglePutIntoGold());
@@ -150,24 +153,25 @@ public class ProtoDesk {
 			jsonObject.put("maxRound", BaseConfig.getInstance().MAXROUND);
 			jsonObject.put("curTurnUserId ", desk.getCurrentRound());
 			jsonObject.put("curTurnEndTime  ", desk.getCurTurnEndTime());
+			MsgManager.getInstance().sendMsg(jsonObject.toString(),user.getChannel());
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void notifyDealCardRes(Channel channel,int bankerId){
 		JSONObject jsonObject = new JSONObject();
 		try {
-			jsonObject.put("tag", ProtoTag.PROTONOTIFYDEALCARD.value);
+			jsonObject.put("tag", ProtoTag.proto_notifyDealCard.value);
 			jsonObject.put("bankerId", bankerId);
 			MsgManager.getInstance().sendMsg(jsonObject.toString(),channel);
 		} catch (JSONException e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void notifyRoundRes(User user){
 		try {
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("tag", ProtoTag.PROTONOTIFYROUND.value);
+			jsonObject.put("tag", ProtoTag.proto_notifyRound.value);
 			jsonObject.put("userId", user.getUserId());
 			jsonObject.put("countDown", user.getDeskUserData().getDesk().getRoundCountDown());
 			jsonObject.put("curRound", user.getDeskUserData().getDesk().getCurrentRound());
@@ -186,9 +190,7 @@ public class ProtoDesk {
 			
 			MsgManager.getInstance().sendMsg(jsonObject.toString(),user.getChannel());
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	
@@ -196,7 +198,34 @@ public class ProtoDesk {
 		JSONObject jsonObject = (JSONObject)(object);
 		
 	}
-	public void operateCardRes(Channel channel) {
-		
+	public void operateCardRes(Channel channel,int status,String reasult,int userId
+			,int type,int compareUserId,int winnerUserId
+			,ArrayList<Integer>userCards,ArrayList<Integer>compareCards) {
+		JSONObject jsonObject = new JSONObject();
+		try {
+			jsonObject.put("tag", ProtoTag.proto_operateCard.value);
+			jsonObject.put("status",status);
+			jsonObject.put("result",reasult);
+			jsonObject.put("userId", userId);
+			jsonObject.put("type", type);
+			jsonObject.put("compareUserId", compareUserId);
+			jsonObject.put("winnerUserId", winnerUserId);
+			if (null!=userCards) {
+				for (int i = 0; i < userCards.size(); i++) {
+					jsonObject.put("userCard_"+i, userCards.get(i));
+				}
+			}
+			if (null!=compareCards) {
+				for (int i = 0; i < compareCards.size(); i++) {
+					jsonObject.put("compareCards_"+i, compareCards	.get(i));
+				}				
+			}
+		} catch (JSONException e) {
+			XFException.logException(e);
+		}
+	}
+	public void operateCardRes(Channel channel,int status,String reasult,int userId
+			,int type) {
+		operateCardRes(channel,status,reasult,userId,type,0,0,null,null);
 	}
 }

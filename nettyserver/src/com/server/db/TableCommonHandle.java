@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.mysql.jdbc.PreparedStatement;
+import com.server.Utils.XFException;
 import com.server.db.ConnectionPool.PooledConnection;
 
 public class TableCommonHandle {
@@ -28,7 +29,7 @@ public class TableCommonHandle {
 				id = rs.getInt(1); 
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			XFException.logException(e);
 		} finally {
 			if (null != conn) {
 				conn.close();				
@@ -43,7 +44,10 @@ public class TableCommonHandle {
 			conn = DBManager.getConnection();
 			rSet = conn.executeQuery(sql);
 			
-		} finally {
+		} catch(Exception e){
+			XFException.logException(e);
+		}
+		finally {
 			if (null != conn) {
 				conn.close();				
 			}

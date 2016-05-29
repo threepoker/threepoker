@@ -2,6 +2,7 @@ package com.server.db;
 
 import java.sql.SQLException;
 
+import com.server.Utils.XFException;
 import com.server.db.ConnectionPool;
 import com.server.db.ConnectionPool.PooledConnection;
 
@@ -13,12 +14,7 @@ public class DBManager {
 	private static DBManager inst;
 
 	public void close() {
-		try {
-			connectionPool.closeConnectionPool();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		connectionPool.closeConnectionPool();
 	}
 
 	public DBManager() {
@@ -36,8 +32,7 @@ public class DBManager {
 			
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			XFException.logException(e);
 		}
 
 	}

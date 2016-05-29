@@ -12,4 +12,12 @@
     <Project>logo</Project>
     <GuidesList />
   </GuidesProject>
+  <GuidesProject>
+    <Project>deskPlayer</Project>
+    <GuidesList />
+  </GuidesProject>
+  <GuidesProject>
+    <Project>poker_5</Project>
+    <GuidesList />
+  </GuidesProject>
 </ArrayOfGuidesProject>

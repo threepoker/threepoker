@@ -4,7 +4,9 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 
 
+
 import com.server.Utils.NotificationCenter;
+import com.server.Utils.XFException;
 import com.server.Utils.XFStack;
 import com.server.game.proto.ProtoTag;
 
@@ -36,7 +38,7 @@ public class MsgManager {
 			JSONObject rj = new JSONObject(decode(msg));
 			tag = rj.getInt("tag");
 			switch (ProtoTag.getEnumTag(tag)) {
-			case PROTOLOGIN:
+			case proto_login:
 				ProtoLogin.getInstance().loginReq(rj,channel);	
 				break;
 			default:
@@ -44,7 +46,7 @@ public class MsgManager {
 				break;
 			}
 		} catch (Exception e) {
-			XFStack.logStack(e);
+			XFException.logException(e);
 		}
 	}
 	public void sendMsg(String msg,Channel channel){

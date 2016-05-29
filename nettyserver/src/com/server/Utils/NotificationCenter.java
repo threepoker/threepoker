@@ -3,7 +3,6 @@ package com.server.Utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-
 import java.util.Iterator;
 
 
@@ -51,10 +50,8 @@ public class NotificationCenter {
 						method.invoke(event.target, event.sender);
 					}
 				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					e.printStackTrace();
-				}				
+					XFException.logException(e);
+				} 			
 			}
 	    }
 	}
