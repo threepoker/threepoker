@@ -63,7 +63,7 @@ public class ProtoDesk {
 		try {
 			jsonObject.put("tag", ProtoTag.proto_notifyEnterDesk.value);
 			jsonObject.put("userId", user.getUserId());
-			jsonObject.put("nickName",user.getUserName());
+			jsonObject.put("nickName",user.getNickName());
 			jsonObject.put("gold", user.getGold());
 			jsonObject.put("pos", user.getDeskUserData().getPos());
 			jsonObject.put("head", user.getHead());
@@ -137,6 +137,7 @@ public class ProtoDesk {
 			for (User userIterUser : desk.getUserMap().values()) {
 				jsonObject.put(index+"_userId", userIterUser.getUserId());
 				jsonObject.put(index+"_userGold", userIterUser.getGold());
+				jsonObject.put(index+"_userNickName", userIterUser.getNickName());
 				DeskUserData deskUserData = desk.getDeskUserData(userIterUser.getUserId());
 				if (null != deskUserData) {
 					jsonObject.put(index+"_userPutInGold", deskUserData.getPutInGold());

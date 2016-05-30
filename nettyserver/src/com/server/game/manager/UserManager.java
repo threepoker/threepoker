@@ -33,7 +33,7 @@ public class UserManager {
 			}
 			rSet = TableUserHandle.getInstance().selectUser("userId", userId);
 			if (null!=rSet && rSet.next()) {
-				user.setUserName(rSet.getString(rSet.findColumn("nickName")));
+				user.setNickName(rSet.getString(rSet.findColumn("nickName")));
 				user.setHead(rSet.getString(rSet.findColumn("head")));
 			}
 			remove(user.getUserId());

@@ -7,7 +7,7 @@ var DeskScene = cc.Scene.extend({
 });  
 var Desk = cc.Layer.extend({
 	sprite:null,
-	posDiff:0,
+	difPos:0,
 	ctor:function () {
 		//////////////////////////////
 		// 1. super init first
@@ -23,7 +23,7 @@ var Desk = cc.Layer.extend({
 	onEnter:function (){
 		ProtoDesk.getDeskInfoReq();
 		NotificationCenter.addObserver(this, this.getDeskInfoRes, ProtoTag.GETDESKINFO, null);
-		NotificationCenter.addObserver(this, this.onEnterDeskRes, ProtoTag.NOTIFYENTERDESK, null);
+		NotificationCenter.addObserver(this, this.onNotifyEnterDeskRes, ProtoTag.NOTIFYENTERDESK, null);
 		this._super();
 	},
 
@@ -48,33 +48,37 @@ var Desk = cc.Layer.extend({
 		}
 		for(i=0; i<5; i++){
 			if((i+selfPos)%5==2){
-				this.posDiff = i;
+				this.difPos = i;
 				break;
 			}
 		}
+		//cc.log("selfPos = "+selfPos+"  difPos="+this.difPos+" userNum="+data.userNum);
 		for(i=0; i<data.userNum; i++){
 			var deskUserData = new DeskUserData();
 			deskUserData.id = data[i+"_userId"];
+			deskUserData.nickName = data[i+"_userNickName"];
+			deskUserData.gold = data[i+"_userGold"];
 			deskUserData.pos = data[i+"_userPos"];
 			deskUserData.putInGold = data[i+"_userPutInGold"];
 			deskUserData.isPlaying = data[i+"_userIsPlaying"];
 			deskUserData.isSeeCard = data[i+"_userIsSeeCard"];
 			deskUserData.isGiveUp = data[i+"_userIsGiveUp"];
+			deskUserData.difPos = this.difPos;
 			this.addUser(deskUserData);
 		}
 	},
-	onEnterDeskRes:function(data){
+	onNotifyEnterDeskRes:function(data){
 			var deskUserData = new DeskUserData();
-			deskUserData.id = data[i+"_userId"];
-			deskUserData.pos = data[i+"_userPos"];
-			addUser(deskUserData);
+			deskUserData.id = data["userId"];
+			deskUserData.pos = data["pos"];
+			deskUserData.nickName = data["nickName"];
+			deskUserData.gold = data["gold"];
+			deskUserData.difPos = this.difPos;
+			cc.log("id="+deskUserData.id+"  nickName="+deskUserData.nickName);
+			this.addUser(deskUserData);
 	},
 	addUser:function(deskUserData){
-		var deskUser = new DeskUser(deskUserData.id,deskUserData.pos);
-		deskUser.setPutInGold(deskUserData.putInGold);
-		deskUser.setIsPlaying(deskUserData.isPlaying);
-		deskUser.setIsSeeCard(deskUserData.isSeeCard);
-		deskUser.setIsGiveUp(deskUserData.isGiveUp);
+		var deskUser = new DeskUser(deskUserData);
 		deskUser.tag = deskUserData.id;
 		this.addChild(deskUser);
 	},

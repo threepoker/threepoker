@@ -5,7 +5,7 @@ import io.netty.channel.Channel;
 public class User {
 	private int userId;
 	private Channel channel;
-	private String userName;
+	private String nickName;
 	private long gold = 0;
 	private int diamond = 0;
 	private String head;
@@ -39,11 +39,11 @@ public class User {
 	public void setDiamond(int diamond) {
 		this.diamond = diamond;
 	}
-	public String getUserName() {
-		return userName;
+	public String getNickName() {
+		return nickName;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
 	}
 	public String getHead() {
 		return head;
