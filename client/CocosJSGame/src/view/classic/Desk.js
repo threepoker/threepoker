@@ -23,6 +23,7 @@ var Desk = cc.Layer.extend({
 	onEnter:function (){
 		ProtoDesk.getDeskInfoReq();
 		NotificationCenter.addObserver(this, this.getDeskInfoRes, ProtoTag.GETDESKINFO, null);
+		NotificationCenter.addObserver(this, this.onEnterDeskRes, ProtoTag.NOTIFYENTERDESK, null);
 		this._super();
 	},
 
@@ -51,5 +52,35 @@ var Desk = cc.Layer.extend({
 				break;
 			}
 		}
+		for(i=0; i<data.userNum; i++){
+			var deskUserData = new DeskUserData();
+			deskUserData.id = data[i+"_userId"];
+			deskUserData.pos = data[i+"_userPos"];
+			deskUserData.putInGold = data[i+"_userPutInGold"];
+			deskUserData.isPlaying = data[i+"_userIsPlaying"];
+			deskUserData.isSeeCard = data[i+"_userIsSeeCard"];
+			deskUserData.isGiveUp = data[i+"_userIsGiveUp"];
+			this.addUser(deskUserData);
+		}
 	},
+	onEnterDeskRes:function(data){
+			var deskUserData = new DeskUserData();
+			deskUserData.id = data[i+"_userId"];
+			deskUserData.pos = data[i+"_userPos"];
+			addUser(deskUserData);
+	},
+	addUser:function(deskUserData){
+		var deskUser = new DeskUser(deskUserData.id,deskUserData.pos);
+		deskUser.setPutInGold(deskUserData.putInGold);
+		deskUser.setIsPlaying(deskUserData.isPlaying);
+		deskUser.setIsSeeCard(deskUserData.isSeeCard);
+		deskUser.setIsGiveUp(deskUserData.isGiveUp);
+		deskUser.tag = deskUserData.id;
+		this.addChild(deskUser);
+	},
+	removeUser:function(id){
+		if(null != this.getChildByTag(id)){
+			this.removeChildByTag(id);
+		}
+	}
 });
